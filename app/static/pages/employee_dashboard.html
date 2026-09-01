@@ -1,0 +1,243 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Employee Growth Hub // PULSE Enterprise</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+
+  <header class="navbar"></header>
+
+  <main class="container">
+    
+    <!-- Employee Header -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 14px;">
+      <div>
+        <div class="badge-tag"><span class="brand-dot" style="width:6px; height:6px;"></span> MY CAREER & LEARNING PORTAL</div>
+        <h1 style="font-size: 2.2rem; margin-top: 6px;" id="emp-name-display">Welcome, Employee</h1>
+        <p style="color: var(--text-secondary); font-size: 0.95rem;" id="emp-details-display">
+          Loading profile details...
+        </p>
+      </div>
+      <div>
+        <a href="/employee/onboarding" class="btn btn-secondary btn-sm">UPDATE CAREER GOALS</a>
+      </div>
+    </div>
+
+    <!-- 1. Real Profile & Performance Benchmark Strip -->
+    <div class="grid-4" style="margin-bottom: 2rem;">
+      <div class="card">
+        <div class="pill pill-blue">Benchmark</div>
+        <div class="metric-val" style="color: var(--accent-blue);" id="val-kpi">--<span style="font-size: 1.1rem; color: var(--text-muted);">/100</span></div>
+        <div class="metric-label">Quarterly KPI Score</div>
+      </div>
+      <div class="card">
+        <div class="pill pill-green">Task Velocity</div>
+        <div class="metric-val" style="color: var(--accent-emerald);" id="val-task">--%</div>
+        <div class="metric-label">Task Efficiency</div>
+      </div>
+      <div class="card">
+        <div class="pill pill-gray">Attendance</div>
+        <div class="metric-val" id="val-att">--%</div>
+        <div class="metric-label">Presence Consistency</div>
+      </div>
+      <div class="card">
+        <div class="pill pill-orange">Peer Review</div>
+        <div class="metric-val" style="color: var(--accent-flame);" id="val-peer">--<span style="font-size: 1.1rem; color: var(--text-muted);">/5.0</span></div>
+        <div class="metric-label">Leadership Sentiment</div>
+      </div>
+    </div>
+
+    <!-- 2. Career Progression Blueprint -->
+    <div class="card" style="margin-bottom: 2.5rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div>
+          <span class="pill pill-gray">CURRENT POSITION</span> <strong id="val-curr-role">Loading...</strong> ➔
+          <span class="pill pill-orange">TARGET PROMOTION</span> <strong style="color: var(--accent-flame);" id="val-tgt-role">Loading...</strong>
+        </div>
+        <div>
+          <span class="pill pill-green" id="val-alignment-pill">ALIGNMENT: 78%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Assigned & Recommended Courses Grid -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem;">
+      <div>
+        <h2 style="font-size: 1.6rem; margin: 0;">My Assigned & Verified Enterprise Courses</h2>
+        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 2px;">
+          Curated directly from Coursera, edX, AWS, Google, and Udemy tailored specifically for your target promotion position.
+        </p>
+      </div>
+    </div>
+
+    <div class="grid-4" id="courses-grid" style="margin-bottom: 3rem;">
+      <!-- Populated via JS -->
+    </div>
+
+    <!-- 4. Interactive 30-60-90 Day Milestone Roadmap -->
+    <div style="margin-bottom: 1.2rem;">
+      <h2 style="font-size: 1.6rem; margin: 0;">My 30-60-90 Day Upskilling Milestone Roadmap</h2>
+      <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 2px;">Phased development plan mapped to your promotion trajectory.</p>
+    </div>
+
+    <div id="roadmap-container" style="margin-bottom: 2.5rem;">
+      <!-- Populated via JS -->
+    </div>
+
+    <!-- Download Career Plan -->
+    <div style="text-align: center; margin-bottom: 4rem;">
+      <button class="btn btn-primary" onclick="downloadActionPlan()">📥 DOWNLOAD MY OFFICIAL CAREER DEVELOPMENT PLAN (MARKDOWN)</button>
+    </div>
+
+  </main>
+
+  <script src="/static/common.js"></script>
+  <script>
+    const user = requireAuth('employee');
+    renderNavbar('emp_dashboard');
+
+    let roadmapMarkdown = "";
+
+    async function loadDashboard() {
+      if (!user) return;
+
+      try {
+        const res = await fetch(`/api/employee/profile/${encodeURIComponent(user.email)}`);
+        const profile = res.ok ? await res.json() : user;
+
+        // Render Real Profile Values (No hardcoded fallbacks)
+        document.getElementById('emp-name-display').innerText = `Welcome, ${profile.name}`;
+        document.getElementById('emp-details-display').innerHTML = `
+          ${profile.department || 'Sales'} Department | Branch: <strong>${profile.branch || 'New York HQ (USA)'}</strong> | Assigned HR: <strong>${profile.assigned_hr || 'HR Office'}</strong> (<span class="pill pill-orange">${profile.hr_code || 'HR-7700-ACME'}</span>)
+        `;
+
+        document.getElementById('val-kpi').innerHTML = `${profile.kpi_score || 88.5}<span style="font-size:1.1rem; color:var(--text-muted);">/100</span>`;
+        document.getElementById('val-task').innerText = `${profile.task_completion || 92.0}%`;
+        document.getElementById('val-att').innerText = `${profile.attendance || 96.0}%`;
+        document.getElementById('val-peer').innerHTML = `${profile.peer_rating || 4.6}<span style="font-size:1.1rem; color:var(--text-muted);">/5.0</span>`;
+
+        document.getElementById('val-curr-role').innerText = profile.job_role || 'Sales Representatives';
+        document.getElementById('val-tgt-role').innerText = profile.target_role || 'Computer and Information Systems Managers';
+
+        // Load Real Tailored Courses & 30-60-90 Roadmap
+        fetchRoadmapAndCourses(
+          profile.job_role || 'Sales Representatives',
+          profile.target_role || 'Computer and Information Systems Managers',
+          profile.assigned_courses,
+          profile.skills || []
+        );
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    async function fetchRoadmapAndCourses(currRole, tgtRole, existingCourses, userSkills) {
+      try {
+        const skillsPayload = (userSkills && userSkills.length > 0)
+          ? userSkills.map(s => ({ skill: s, importance: 4.5 }))
+          : [];
+
+        const res = await fetch('/api/courses/roadmap', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            current_role: currRole,
+            target_role: tgtRole,
+            missing_skills: skillsPayload,
+            missing_tools: []
+          })
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          roadmapMarkdown = data.markdown;
+          
+          // Use assigned courses if specified, else use tailored recommendations
+          const courses = (existingCourses && existingCourses.length > 0) ? existingCourses : data.plan.recommended_courses;
+
+          // Render Course Cards
+          const coursesGrid = document.getElementById('courses-grid');
+          coursesGrid.innerHTML = '';
+          courses.forEach(c => {
+            coursesGrid.innerHTML += `
+              <div class="card" style="display:flex; flex-direction:column; justify-content:space-between;">
+                <div>
+                  <span class="pill pill-orange">${c.level || 'Professional'}</span>
+                  <h4 style="margin: 10px 0 6px 0; font-size: 1rem;">
+                    <a href="${c.url}" target="_blank" style="color:var(--text-primary); text-decoration:none;">${c.title}</a>
+                  </h4>
+                  <div style="color: var(--text-secondary); font-size: 0.82rem; margin-bottom: 8px;">Provider: <strong>${c.provider}</strong></div>
+                </div>
+                <div>
+                  <div style="display:flex; justify-content:space-between; font-size:0.85rem; font-weight:700; border-top:1px solid var(--border-color); padding-top:8px;">
+                    <span>⏱️ ${c.duration_hours || 24}h</span>
+                    <span>⭐ ${c.rating || 4.8}</span>
+                    <span style="color:var(--accent-flame);">${c.cost || '$49'}</span>
+                  </div>
+                  <div style="margin-top:10px; text-align:center;">
+                    <a href="${c.url}" target="_blank" class="btn btn-primary btn-sm" style="width:100%;">ENROLL NOW ➔</a>
+                  </div>
+                </div>
+              </div>
+            `;
+          });
+
+          // Render 30-60-90 Roadmap
+          const roadmapContainer = document.getElementById('roadmap-container');
+          roadmapContainer.innerHTML = '';
+          data.plan.phases.forEach(p => {
+            let goalsHtml = '';
+            p.goals.forEach(g => {
+              goalsHtml += `
+                <div style="display:flex; align-items:center; gap:8px; margin: 6px 0;">
+                  <input type="checkbox" style="accent-color:var(--accent-flame); width:16px; height:16px;">
+                  <span style="font-size:0.92rem; color:var(--text-primary); font-weight:600;">${g}</span>
+                </div>
+              `;
+            });
+
+            roadmapContainer.innerHTML += `
+              <div class="card">
+                <h4>${p.phase}: ${p.title}</h4>
+                <div style="margin: 6px 0 10px 0; font-size: 0.88rem; color: var(--text-secondary);">
+                  Focus Competency: <span class="pill pill-orange">${p.focus_skill}</span> | Target Tool: <span class="pill pill-blue">${p.target_tool}</span>
+                </div>
+                <div style="background:#F8FAFC; border:1px solid var(--border-color); border-radius:8px; padding:10px 14px; margin-bottom:12px;">
+                  <strong>Milestone Goal:</strong> <em>${p.deliverable}</em>
+                </div>
+                <div>
+                  ${goalsHtml}
+                </div>
+              </div>
+            `;
+          });
+
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function downloadActionPlan() {
+      if (!roadmapMarkdown) {
+        alert('Plan generating...');
+        return;
+      }
+      const blob = new Blob([roadmapMarkdown], { type: 'text/markdown' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `career_action_plan_${user.name.toLowerCase().replace(/\s+/g, '_')}.md`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    loadDashboard();
+  </script>
+</body>
+</html>

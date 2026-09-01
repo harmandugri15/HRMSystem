@@ -48,5 +48,326 @@
     "attendance": 92.9,
     "task_completion": 90.4,
     "peer_rating": 4.4
+  },
+  "hr@pulse.ai": {
+    "name": "Sarah Jenkins",
+    "email": "hr@pulse.ai",
+    "password_hash": "b690e0f020b41406fb7968778ad01c0be117187cefa85105612742ff55eb9a58",
+    "salt": "59abbb5b93c934c54de3baaa6b7c89ad",
+    "role": "hr",
+    "company": "Acme Global Corp",
+    "hr_code": "HR-7700-ACME",
+    "is_verified": true,
+    "is_onboarded": true
+  },
+  "alex@pulse.ai": {
+    "name": "Alex Mercer",
+    "email": "alex@pulse.ai",
+    "password_hash": "b86b20f795ac8c9db331efffd64118edae5e442b2a39febd8b44db3e218e4ad1",
+    "salt": "982c89a93795ef0c7f5e4567b4c63172",
+    "role": "employee",
+    "company": "Acme Global Corp",
+    "hr_code": "HR-7700-ACME",
+    "assigned_hr": "hr@pulse.ai",
+    "branch": "New York HQ (USA)",
+    "department": "Sales",
+    "job_role": "Sales Representatives",
+    "target_role": "Sales Managers",
+    "experience_years": 4,
+    "skills": [
+      "Strategic Negotiation",
+      "Client Relationship Management",
+      "Salesforce CRM",
+      "Presentation"
+    ],
+    "kpi_score": 88.5,
+    "attendance": 96.0,
+    "task_completion": 92.0,
+    "peer_rating": 4.6,
+    "is_verified": true,
+    "is_onboarded": true,
+    "assigned_courses": [
+      {
+        "title": "Strategic Leadership and Management Specialization",
+        "provider": "Coursera (University of Illinois)",
+        "rating": 4.8,
+        "duration_hours": 32,
+        "level": "Intermediate",
+        "url": "https://www.coursera.org/specializations/strategic-leadership",
+        "cost": "/mo"
+      }
+    ]
+  },
+  "verify.candidate@pulse.ai": {
+    "name": "Verify Candidate",
+    "email": "verify.candidate@pulse.ai",
+    "password_hash": "a767dc27ae491b82ae207382773187ec2062d23930fb8d259e1d91d726ab48d5",
+    "salt": "b0933694a4faa8e7814679e6294fcd6c",
+    "role": "employee",
+    "company": "Acme Global Corp",
+    "hr_code": "HR-7700-ACME",
+    "assigned_hr": "hr@pulse.ai",
+    "is_verified": true,
+    "is_onboarded": true,
+    "branch": "London Tech Hub (UK)",
+    "department": "Engineering & IT",
+    "job_role": "Software Developers",
+    "target_role": "Computer and Information Systems Managers",
+    "experience_years": 5,
+    "skills": [
+      "Python Programming",
+      "AWS Cloud Architecture",
+      "Strategic Negotiation"
+    ],
+    "kpi_score": 94.9,
+    "attendance": 96.5,
+    "task_completion": 89.4,
+    "peer_rating": 4.5,
+    "assigned_courses": [
+      {
+        "title": "AWS Certified Solutions Architect",
+        "url": "https://aws.amazon.com"
+      }
+    ],
+    "roadmap": {}
+  },
+  "harmandugri15@gmail.com": {
+    "name": "Kamaldeep",
+    "email": "harmandugri15@gmail.com",
+    "password_hash": "23a8bbcc71f5c920bace1397210041c384426dcda7fa89688678e1ff03b16232",
+    "salt": "830e54c3d7b82790f0167a284f6c6ad5",
+    "role": "hr",
+    "company": "ABC group",
+    "hr_code": "HR-6717-ABCG",
+    "is_verified": true,
+    "is_onboarded": true
+  },
+  "hs2643686@gmail.com": {
+    "name": "Hargun",
+    "email": "hs2643686@gmail.com",
+    "password_hash": "c612c0576fa31372a309ae161c0cba82f46d99a470d0b49e07595d939d2b3b30",
+    "salt": "b5a78d7d2ef9e46741ae46bff143906c",
+    "role": "employee",
+    "company": "ABC group",
+    "hr_code": "HR-6717-ABCG",
+    "assigned_hr": "harmandugri15@gmail.com",
+    "is_verified": true,
+    "is_onboarded": true,
+    "branch": "New York HQ (USA)",
+    "department": "Sales",
+    "job_role": "Sales Representatives",
+    "target_role": "Computer and Information Systems Managers",
+    "experience_years": 4,
+    "skills": [
+      "Strategic Negotiation",
+      "Client Relationship Management",
+      "Salesforce CRM",
+      "Team Leadership"
+    ],
+    "kpi_score": 93.8,
+    "attendance": 97.2,
+    "task_completion": 93.0,
+    "peer_rating": 4.6,
+    "assigned_courses": [
+      {
+        "keywords": [
+          "computer",
+          "information systems",
+          "information technology",
+          "it manager",
+          "systems manager",
+          "chief information",
+          "cto",
+          "cio",
+          "it leadership"
+        ],
+        "title": "IT Project Management & Technology Leadership",
+        "provider": "Coursera (University of Washington)",
+        "rating": 4.8,
+        "duration_hours": 36,
+        "level": "Advanced",
+        "url": "https://www.coursera.org/specializations/it-project-management",
+        "cost": "$49/mo",
+        "match_score": 15
+      },
+      {
+        "keywords": [
+          "cloud",
+          "aws",
+          "azure",
+          "infrastructure",
+          "devops",
+          "systems",
+          "architecture",
+          "information systems"
+        ],
+        "title": "AWS Certified Solutions Architect & Enterprise Cloud Strategy",
+        "provider": "AWS / Coursera",
+        "rating": 4.9,
+        "duration_hours": 40,
+        "level": "Intermediate to Advanced",
+        "url": "https://aws.amazon.com/certification/certified-solutions-architect-associate",
+        "cost": "$150",
+        "match_score": 10
+      },
+      {
+        "keywords": [
+          "cybersecurity",
+          "security",
+          "governance",
+          "compliance",
+          "risk management",
+          "information systems"
+        ],
+        "title": "Google Cybersecurity & Information Systems Governance",
+        "provider": "Coursera (Google)",
+        "rating": 4.8,
+        "duration_hours": 45,
+        "level": "Beginner to Intermediate",
+        "url": "https://www.coursera.org/professional-certificates/google-cybersecurity",
+        "cost": "$49/mo",
+        "match_score": 5
+      },
+      {
+        "keywords": [
+          "software",
+          "engineering",
+          "system design",
+          "architecture",
+          "microservices",
+          "computer"
+        ],
+        "title": "Software Architecture & Enterprise Distributed Systems",
+        "provider": "edX (Dartmouth)",
+        "rating": 4.9,
+        "duration_hours": 32,
+        "level": "Advanced",
+        "url": "https://www.edx.org/learn/software-development",
+        "cost": "$149",
+        "match_score": 5
+      }
+    ],
+    "roadmap": {
+      "current_role": "Sales Representatives",
+      "target_role": "Computer and Information Systems Managers",
+      "total_estimated_hours": 153,
+      "recommended_courses": [
+        {
+          "keywords": [
+            "computer",
+            "information systems",
+            "information technology",
+            "it manager",
+            "systems manager",
+            "chief information",
+            "cto",
+            "cio",
+            "it leadership"
+          ],
+          "title": "IT Project Management & Technology Leadership",
+          "provider": "Coursera (University of Washington)",
+          "rating": 4.8,
+          "duration_hours": 36,
+          "level": "Advanced",
+          "url": "https://www.coursera.org/specializations/it-project-management",
+          "cost": "$49/mo",
+          "match_score": 15
+        },
+        {
+          "keywords": [
+            "cloud",
+            "aws",
+            "azure",
+            "infrastructure",
+            "devops",
+            "systems",
+            "architecture",
+            "information systems"
+          ],
+          "title": "AWS Certified Solutions Architect & Enterprise Cloud Strategy",
+          "provider": "AWS / Coursera",
+          "rating": 4.9,
+          "duration_hours": 40,
+          "level": "Intermediate to Advanced",
+          "url": "https://aws.amazon.com/certification/certified-solutions-architect-associate",
+          "cost": "$150",
+          "match_score": 10
+        },
+        {
+          "keywords": [
+            "cybersecurity",
+            "security",
+            "governance",
+            "compliance",
+            "risk management",
+            "information systems"
+          ],
+          "title": "Google Cybersecurity & Information Systems Governance",
+          "provider": "Coursera (Google)",
+          "rating": 4.8,
+          "duration_hours": 45,
+          "level": "Beginner to Intermediate",
+          "url": "https://www.coursera.org/professional-certificates/google-cybersecurity",
+          "cost": "$49/mo",
+          "match_score": 5
+        },
+        {
+          "keywords": [
+            "software",
+            "engineering",
+            "system design",
+            "architecture",
+            "microservices",
+            "computer"
+          ],
+          "title": "Software Architecture & Enterprise Distributed Systems",
+          "provider": "edX (Dartmouth)",
+          "rating": 4.9,
+          "duration_hours": 32,
+          "level": "Advanced",
+          "url": "https://www.edx.org/learn/software-development",
+          "cost": "$149",
+          "match_score": 5
+        }
+      ],
+      "phases": [
+        {
+          "phase": "Phase 1: Days 1 \u2013 30",
+          "title": "Core Foundations & Tool Ramp-Up",
+          "focus_skill": "Cloud Infrastructure Architecture",
+          "target_tool": "AWS / Enterprise Cloud Console",
+          "goals": [
+            "Complete primary certification module in Cloud Infrastructure Architecture.",
+            "Gain baseline working fluency with AWS / Enterprise Cloud Console.",
+            "Establish bi-weekly 1:1 mentorship milestone review with department lead."
+          ],
+          "deliverable": "Demonstrate practical tool proficiency on a sandbox sprint project."
+        },
+        {
+          "phase": "Phase 2: Days 31 \u2013 60",
+          "title": "Advanced Execution & Applied Projects",
+          "focus_skill": "IT Governance & Compliance",
+          "target_tool": "Cybersecurity Audit Tools",
+          "goals": [
+            "Master advanced operational workflows in IT Governance & Compliance.",
+            "Integrate Cybersecurity Audit Tools into daily departmental deliverables.",
+            "Lead cross-functional technical sync on Computer and Information Systems Managers project priorities."
+          ],
+          "deliverable": "Deliver an end-to-end production deliverable aligned with Computer and Information Systems Managers expectations."
+        },
+        {
+          "phase": "Phase 3: Days 61 \u2013 90",
+          "title": "Autonomous Leadership & Role Transition",
+          "focus_skill": "Agile Systems Project Management",
+          "target_tool": "Cross-Functional Architecture",
+          "goals": [
+            "Demonstrate mastery in Agile Systems Project Management under live operational conditions.",
+            "Shadow incumbent Computer and Information Systems Managers on strategic planning initiatives.",
+            "Formal review of promotion eligibility portfolio with HR leadership."
+          ],
+          "deliverable": "Final readiness evaluation and formal transition into Computer and Information Systems Managers."
+        }
+      ]
+    }
   }
 }

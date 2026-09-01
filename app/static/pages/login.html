@@ -1,0 +1,118 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In // PULSE Enterprise</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+
+  <header class="navbar"></header>
+
+  <main class="container" style="max-width: 540px; margin-top: 2rem;">
+    
+    <div class="card" style="padding: 2.2rem;">
+      <div style="text-align: center; margin-bottom: 1.5rem;">
+        <span class="badge-tag">AUTHENTICATION</span>
+        <h2 style="font-size: 2rem; margin: 10px 0 6px 0;">Sign In to PULSE</h2>
+        <p style="color: var(--text-secondary); font-size: 0.92rem;">Access your executive dashboard or employee growth hub.</p>
+      </div>
+
+      <div id="alert-box" style="display: none; padding: 10px 14px; border-radius: 8px; font-size: 0.88rem; font-weight: 600; margin-bottom: 1rem;"></div>
+
+      <form id="login-form" onsubmit="handleLoginSubmit(event)">
+        <div class="form-group">
+          <label class="form-label">Work Email</label>
+          <input type="email" class="form-input" id="login-email" placeholder="name@company.com" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-input" id="login-password" placeholder="••••••••" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 8px;" id="login-submit-btn">SIGN IN</button>
+      </form>
+
+      <div style="margin-top: 1.8rem; border-top: 1px solid var(--border-color); padding-top: 1.4rem; text-align: center;">
+        <div style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 12px;">Don't have an account yet?</div>
+        <div style="display: flex; gap: 10px; justify-content: center;">
+          <a href="/register-employee" class="btn btn-secondary btn-sm">REGISTER AS EMPLOYEE</a>
+          <a href="/register-hr" class="btn btn-secondary btn-sm">START HR TRIAL</a>
+        </div>
+      </div>
+
+      <div style="margin-top: 1.5rem; background: #F8FAFC; border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; text-align: center;">
+        <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px;">Evaluation Quick Launch</div>
+        <div style="display: flex; gap: 8px; justify-content: center;">
+          <button class="btn btn-secondary btn-sm" onclick="launchQuickDemo('hr')">⚡ Demo HR Account</button>
+          <button class="btn btn-secondary btn-sm" onclick="launchQuickDemo('employee')">👤 Demo Employee</button>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <script src="/static/common.js"></script>
+  <script>
+    renderNavbar('login');
+
+    async function handleLoginSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('login-email').value;
+      const password = document.getElementById('login-password').value;
+      const btn = document.getElementById('login-submit-btn');
+      const alertBox = document.getElementById('alert-box');
+
+      btn.disabled = true;
+      btn.innerText = "VERIFYING...";
+      alertBox.style.display = "none";
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        
+        if (res.ok && data.success) {
+          setCurrentUser(data.user);
+          
+          if (!data.user.is_verified) {
+            window.location.href = `/verify-email?email=${encodeURIComponent(data.user.email)}`;
+            return;
+          }
+
+          if (data.user.role === 'employee' && !data.user.is_onboarded) {
+            window.location.href = '/employee/onboarding';
+            return;
+          }
+
+          if (data.user.role === 'hr') {
+            window.location.href = '/hr/dashboard';
+          } else {
+            window.location.href = '/employee/dashboard';
+          }
+        } else {
+          alertBox.style.display = "block";
+          alertBox.style.background = "rgba(239, 68, 68, 0.1)";
+          alertBox.style.color = "#DC2626";
+          alertBox.innerText = data.detail || "Invalid email or password.";
+          btn.disabled = false;
+          btn.innerText = "SIGN IN";
+        }
+      } catch (err) {
+        alertBox.style.display = "block";
+        alertBox.style.background = "rgba(239, 68, 68, 0.1)";
+        alertBox.style.color = "#DC2626";
+        alertBox.innerText = "Network error connecting to API server.";
+        btn.disabled = false;
+        btn.innerText = "SIGN IN";
+      }
+    }
+  </script>
+</body>
+</html>

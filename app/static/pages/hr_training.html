@@ -1,0 +1,162 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Training ROI & Forecaster // PULSE HRMS</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+
+  <header class="navbar"></header>
+
+  <main class="container">
+    
+    <div style="margin-bottom: 2rem;">
+      <div class="badge-tag"><span class="brand-dot" style="width:6px; height:6px;"></span> L&D BUDGET INTELLIGENCE</div>
+      <h1 style="font-size: 2.2rem; margin-top: 6px;">Training Program ROI & Completion Forecaster</h1>
+      <p style="color: var(--text-secondary); font-size: 0.95rem;">
+        Forecast employee certification pass rates, analyze unit costs per training day, and prevent wasted L&D spend.
+      </p>
+    </div>
+
+    <div class="grid-2" style="margin-bottom: 3rem;">
+      
+      <!-- Training Form Card -->
+      <div class="card">
+        <h3>1. Course & Candidate Parameters</h3>
+        <div style="margin-top: 1.2rem;">
+          
+          <div class="form-group">
+            <label class="form-label">Training Program Name</label>
+            <select class="form-select" id="tr-name">
+              <option value="Executive Leadership Acceleration" selected>Executive Leadership Acceleration</option>
+              <option value="Cloud Solutions & Architecture">Cloud Solutions & Architecture</option>
+              <option value="Advanced Machine Learning & AI">Advanced Machine Learning & AI</option>
+              <option value="Strategic Negotiation Mastery">Strategic Negotiation Mastery</option>
+              <option value="Cybersecurity Compliance">Cybersecurity Compliance</option>
+            </select>
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label">Training Type</label>
+              <select class="form-select" id="tr-type">
+                <option value="Internal">Internal Corporate</option>
+                <option value="External" selected>External Accredited</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Program Duration (Days)</label>
+              <input type="number" class="form-input" id="tr-days" value="4">
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label">Total Program Cost ($)</label>
+              <input type="number" class="form-input" id="tr-cost" value="1200">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Candidate Age</label>
+              <input type="number" class="form-input" id="tr-age" value="32">
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label">Engagement Sentiment (1-5)</label>
+              <input type="number" class="form-input" id="tr-eng" value="4">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Satisfaction Score (1-5)</label>
+              <input type="number" class="form-input" id="tr-sat" value="4">
+            </div>
+          </div>
+
+          <button class="btn btn-primary" style="width: 100%; margin-top: 10px;" onclick="runTrainingForecaster()">
+            FORECAST PROGRAM OUTCOME
+          </button>
+        </div>
+      </div>
+
+      <!-- Forecaster Output Card -->
+      <div class="card">
+        <h3>2. Program Outcome Forecast</h3>
+        
+        <div style="text-align: center; padding: 2rem 0 1.5rem 0;">
+          <div class="metric-val" id="tr-prob-val" style="font-size: 3.8rem; color: var(--accent-emerald);">89.2%</div>
+          <span class="pill pill-green" id="tr-status-pill" style="font-size: 0.85rem; padding: 6px 18px;">HIGH COMPLETION PROBABILITY</span>
+        </div>
+
+        <div style="border-top: 1px solid var(--border-color); padding-top: 1.2rem;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+            <span style="color:var(--text-secondary); font-weight:600;">Unit Cost / Training Day:</span>
+            <strong id="tr-unit-cost" style="color:var(--text-primary);">$300.00 / day</strong>
+          </div>
+          <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+            <span style="color:var(--text-secondary); font-weight:600;">Expected Skill Uplift:</span>
+            <strong style="color:var(--accent-flame);">+24.5% Competency</strong>
+          </div>
+          <div style="display:flex; justify-content:space-between;">
+            <span style="color:var(--text-secondary); font-weight:600;">Capital ROI Index:</span>
+            <strong style="color:var(--accent-emerald);">4.2x Investment Return</strong>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <script src="/static/common.js"></script>
+  <script>
+    const user = requireAuth('hr');
+    renderNavbar('training');
+
+    async function runTrainingForecaster() {
+      const days = parseInt(document.getElementById('tr-days').value) || 4;
+      const cost = parseInt(document.getElementById('tr-cost').value) || 1200;
+
+      const payload = {
+        DepartmentType: "Technical",
+        "Training Program Name": document.getElementById('tr-name').value,
+        "Training Type": document.getElementById('tr-type').value,
+        "Training Duration(Days)": days,
+        "Training Cost": cost,
+        Age: parseInt(document.getElementById('tr-age').value) || 32,
+        "Engagement Score": parseInt(document.getElementById('tr-eng').value) || 4,
+        "Satisfaction Score": parseInt(document.getElementById('tr-sat').value) || 4,
+        "Work-Life Balance Score": 3
+      };
+
+      try {
+        const res = await fetch('/api/predict/training', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          const data = await res.json();
+          document.getElementById('tr-prob-val').innerText = `${data.success_probability}%`;
+          document.getElementById('tr-unit-cost').innerText = `$${(cost / days).toFixed(2)} / day`;
+
+          const pill = document.getElementById('tr-status-pill');
+          if (data.success_probability >= 75) {
+            pill.className = 'pill pill-green';
+            pill.innerText = 'HIGH COMPLETION PROBABILITY';
+            document.getElementById('tr-prob-val').style.color = '#059669';
+          } else {
+            pill.className = 'pill pill-orange';
+            pill.innerText = 'MODERATE COMPLETION RISK';
+            document.getElementById('tr-prob-val').style.color = '#FF470A';
+          }
+        }
+      } catch(e) {
+        console.error(e);
+      }
+    }
+  </script>
+</body>
+</html>

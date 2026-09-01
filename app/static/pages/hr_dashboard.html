@@ -1,0 +1,166 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Executive Command Suite // PULSE HRMS</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+
+  <header class="navbar"></header>
+
+  <main class="container">
+    
+    <!-- Top Executive Header -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 14px;">
+      <div>
+        <div class="badge-tag"><span class="brand-dot" style="width:6px; height:6px;"></span> HR EXECUTIVE COMMAND SUITE</div>
+        <h1 style="font-size: 2.2rem; margin-top: 6px;" id="hr-name-title">Welcome, HR Director</h1>
+        <p style="color: var(--text-secondary); font-size: 0.95rem;" id="hr-meta-title">Acme Global Corp | Enterprise Edition</p>
+      </div>
+      <div>
+        <a href="/hr/roster" class="btn btn-primary btn-sm">MANAGE TEAM ROSTER ➔</a>
+      </div>
+    </div>
+
+    <!-- Unique HR Onboarding Code Banner -->
+    <div class="card" style="background: linear-gradient(135deg, #FFF8F5 0%, #FFFFFF 100%); border: 2px solid #FFD2C4; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; margin-bottom: 2rem;">
+      <div>
+        <span class="pill pill-orange">COMPANY ONBOARDING CODE</span>
+        <div style="font-size: 1.3rem; font-weight: 800; font-family: 'Space Grotesk'; margin-top: 4px;">
+          Share this HR Code with your staff: <span id="hr-code-val" style="color: var(--accent-flame); background: #FFFFFF; padding: 4px 14px; border-radius: 8px; border: 1.5px solid var(--accent-flame); letter-spacing: 0.06em;">HR-7700-ACME</span>
+        </div>
+        <p style="color: var(--text-secondary); font-size: 0.86rem; margin-top: 4px;">
+          Employees use this code to link to your company branch and unlock their personalized course roadmaps.
+        </p>
+      </div>
+      <div>
+        <button class="btn btn-secondary btn-sm" onclick="copyHRCode()">📋 COPY CODE</button>
+      </div>
+    </div>
+
+    <!-- KPI Strip -->
+    <div class="grid-5" style="margin-bottom: 2.5rem;">
+      <div class="card">
+        <div class="pill pill-gray">Active Workforce</div>
+        <div class="metric-val" id="kpi-headcount">1,470</div>
+        <div class="metric-label">Monitored Staff</div>
+      </div>
+      <div class="card">
+        <div class="pill pill-green">Health Metric</div>
+        <div class="metric-val" style="color: var(--accent-emerald);" id="kpi-retention">83.9%</div>
+        <div class="metric-label">Retention Rate</div>
+      </div>
+      <div class="card">
+        <div class="pill pill-orange">Compensation</div>
+        <div class="metric-val" style="color: var(--accent-flame);" id="kpi-salary">$6,503</div>
+        <div class="metric-label">Avg Monthly Salary</div>
+      </div>
+      <div class="card">
+        <div class="pill pill-blue">Progression</div>
+        <div class="metric-val" style="color: var(--accent-blue);" id="kpi-promotion">22.4%</div>
+        <div class="metric-label">Promotion Rate</div>
+      </div>
+      <div class="card">
+        <div class="pill pill-gray">L&D Capital</div>
+        <div class="metric-val" id="kpi-spend">$1.82M</div>
+        <div class="metric-label">Total Training Spend</div>
+      </div>
+    </div>
+
+    <!-- Platform Modules Navigation Grid -->
+    <h2 style="margin-bottom: 1.2rem;">Executive Decision Suites</h2>
+    <div class="grid-2" style="margin-bottom: 3.5rem;">
+      <a href="/hr/attrition" style="text-decoration: none;">
+        <div class="card" style="height: 100%;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <h3 style="margin:0; font-size:1.25rem;">1. Attrition Risk Diagnostics Lab</h3>
+            <span class="pill pill-orange">Predictive AI</span>
+          </div>
+          <p style="color: var(--text-secondary); font-size: 0.92rem; line-height: 1.6;">
+            Run individual burnout risk evaluations, isolate top turnover catalysts, and test compensation retention raises with the live what-if policy simulator.
+          </p>
+          <div style="margin-top:14px; font-weight:700; color:var(--accent-flame); font-size:0.88rem;">LAUNCH ATTRITION LAB ➔</div>
+        </div>
+      </a>
+
+      <a href="/hr/performance" style="text-decoration: none;">
+        <div class="card" style="height: 100%;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <h3 style="margin:0; font-size:1.25rem;">2. 360° Talent & Promotion Matrix</h3>
+            <span class="pill pill-green">Talent Benchmarking</span>
+          </div>
+          <p style="color: var(--text-secondary); font-size: 0.92rem; line-height: 1.6;">
+            Interactive capability polygons evaluating KPI attainment, task velocity, attendance, and leadership peer reviews across 5,000 workforce records.
+          </p>
+          <div style="margin-top:14px; font-weight:700; color:var(--accent-emerald); font-size:0.88rem;">LAUNCH TALENT MATRIX ➔</div>
+        </div>
+      </a>
+
+      <a href="/hr/training" style="text-decoration: none;">
+        <div class="card" style="height: 100%;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <h3 style="margin:0; font-size:1.25rem;">3. Training ROI & Budget Forecaster</h3>
+            <span class="pill pill-blue">L&D Capital</span>
+          </div>
+          <p style="color: var(--text-secondary); font-size: 0.92rem; line-height: 1.6;">
+            Track program completion pass rates, unit cost per training day, and simulate employee success probability prior to enrollment.
+          </p>
+          <div style="margin-top:14px; font-weight:700; color:var(--accent-blue); font-size:0.88rem;">LAUNCH TRAINING ROI ➔</div>
+        </div>
+      </a>
+
+      <a href="/hr/skills" style="text-decoration: none;">
+        <div class="card" style="height: 100%;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <h3 style="margin:0; font-size:1.25rem;">4. Skills & Career Pathways Navigator</h3>
+            <span class="pill pill-orange">AI Course Matcher</span>
+          </div>
+          <p style="color: var(--text-secondary); font-size: 0.92rem; line-height: 1.6;">
+            Map cross-role transitions against 1,016 O*NET occupations and automatically synthesize 30-60-90 day upskilling roadmaps with verified courses.
+          </p>
+          <div style="margin-top:14px; font-weight:700; color:var(--accent-flame); font-size:0.88rem;">LAUNCH CAREER NAVIGATOR ➔</div>
+        </div>
+      </a>
+    </div>
+
+  </main>
+
+  <script src="/static/common.js"></script>
+  <script>
+    const user = requireAuth('hr');
+    renderNavbar('overview');
+
+    if (user) {
+      document.getElementById('hr-name-title').innerText = `Welcome, ${user.name}`;
+      document.getElementById('hr-meta-title').innerText = `${user.company || 'Acme Global Corp'} | HR Director`;
+      document.getElementById('hr-code-val').innerText = user.hr_code || 'HR-7700-ACME';
+    }
+
+    async function loadKPIs() {
+      try {
+        const res = await fetch('/api/kpis');
+        if (res.ok) {
+          const data = await res.json();
+          document.getElementById('kpi-headcount').innerText = Number(data.total_headcount).toLocaleString();
+          document.getElementById('kpi-retention').innerText = `${data.retention_rate}%`;
+          document.getElementById('kpi-salary').innerText = `$${Number(data.avg_salary).toLocaleString()}`;
+          document.getElementById('kpi-promotion').innerText = `${data.promotion_rate}%`;
+          document.getElementById('kpi-spend').innerText = `$${(Number(data.total_training_spend) / 1000000).toFixed(2)}M`;
+        }
+      } catch(e) {
+        console.error(e);
+      }
+    }
+
+    function copyHRCode() {
+      const code = document.getElementById('hr-code-val').innerText;
+      navigator.clipboard.writeText(code);
+      alert(`Copied HR Code: ${code}`);
+    }
+
+    loadKPIs();
+  </script>
+</body>
+</html>

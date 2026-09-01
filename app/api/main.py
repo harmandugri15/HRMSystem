@@ -1,6 +1,6 @@
 """
-PULSE // Enterprise AI People Analytics Platform — FastAPI REST API Server
-Serves real-time ML diagnostics, O*NET taxonomies, dual-role auth, and course roadmaps.
+PULSE // Enterprise AI People Analytics Platform — Multi-Page FastAPI Server
+Serves all dedicated HTML pages, REST API endpoints, OTP verification, and first-time onboarding.
 """
 
 from fastapi import FastAPI, HTTPException, Request
@@ -24,14 +24,20 @@ from app.backend.auth import (
     authenticate_user,
     register_hr_user,
     register_employee_user,
+    generate_and_send_otp,
+    verify_otp_code,
+    complete_employee_onboarding,
     get_employees_for_hr,
+    assign_courses_to_employee,
+    get_all_users,
+    save_all_users,
     validate_hr_code
 )
 
 app = FastAPI(
-    title="PULSE Enterprise AI People Analytics API",
-    description="High-performance backend for workforce intelligence, retention prediction, and career pathing.",
-    version="2.0.0"
+    title="PULSE Enterprise AI People Platform",
+    description="Multi-Page Enterprise People Intelligence, Retention Prediction & Skill Navigation API.",
+    version="2.2.0"
 )
 
 app.add_middleware(
@@ -41,6 +47,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
+PAGES_DIR = STATIC_DIR / "pages"
+PAGES_DIR.mkdir(parents=True, exist_ok=True)
+
+# Mount Static Files
+app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
 
 # --- Request/Response Models ---
@@ -57,14 +70,36 @@ class EmployeeRegisterRequest(BaseModel):
     email: str
     password: str
     hr_code: str
-    department: str = "Sales"
-    job_role: str = "Sales Representatives"
-    target_role: str = "Sales Managers"
+
+
+class SendOTPRequest(BaseModel):
+    email: str
+
+
+class VerifyOTPRequest(BaseModel):
+    email: str
+    otp: str
 
 
 class LoginRequest(BaseModel):
     email: str
     password: str
+
+
+class EmployeeOnboardRequest(BaseModel):
+    email: str
+    branch: str
+    department: str
+    job_role: str
+    target_role: str
+    experience_years: int = 3
+    skills: List[str] = []
+
+
+class AssignCoursesRequest(BaseModel):
+    employee_email: str
+    target_role: str
+    courses: Optional[List[Dict[str, Any]]] = None
 
 
 class CompareRolesRequest(BaseModel):
@@ -79,44 +114,138 @@ class CourseRoadmapRequest(BaseModel):
     missing_tools: List[Dict[str, Any]] = []
 
 
-# --- API Routes ---
+# ==============================================================================
+# 1. STANDALONE HTML PAGE ROUTES (MULTI-PAGE APPLICATION)
+# ==============================================================================
+
+def _serve_page(filename: str):
+    p = PAGES_DIR / filename
+    if p.exists():
+        return FileResponse(str(p))
+    p_alt = STATIC_DIR / filename
+    if p_alt.exists():
+        return FileResponse(str(p_alt))
+    raise HTTPException(status_code=404, detail=f"Page {filename} not found.")
+
+
+@app.get("/")
+def page_landing():
+    return _serve_page("landing.html")
+
+
+@app.get("/login")
+def page_login():
+    return _serve_page("login.html")
+
+
+@app.get("/register-hr")
+def page_register_hr():
+    return _serve_page("register_hr.html")
+
+
+@app.get("/register-employee")
+def page_register_employee():
+    return _serve_page("register_employee.html")
+
+
+@app.get("/verify-email")
+def page_verify_email():
+    return _serve_page("verify_email.html")
+
+
+@app.get("/employee/onboarding")
+def page_employee_onboarding():
+    return _serve_page("employee_onboarding.html")
+
+
+@app.get("/employee/dashboard")
+def page_employee_dashboard():
+    return _serve_page("employee_dashboard.html")
+
+
+@app.get("/hr/dashboard")
+def page_hr_dashboard():
+    return _serve_page("hr_dashboard.html")
+
+
+@app.get("/hr/attrition")
+def page_hr_attrition():
+    return _serve_page("hr_attrition.html")
+
+
+@app.get("/hr/performance")
+def page_hr_performance():
+    return _serve_page("hr_performance.html")
+
+
+@app.get("/hr/training")
+def page_hr_training():
+    return _serve_page("hr_training.html")
+
+
+@app.get("/hr/skills")
+def page_hr_skills():
+    return _serve_page("hr_skills.html")
+
+
+@app.get("/hr/roster")
+def page_hr_roster():
+    return _serve_page("hr_roster.html")
+
+
+# ==============================================================================
+# 2. REST API ENDPOINTS
+# ==============================================================================
 
 @app.get("/api/health")
 def health_check():
-    return {"status": "online", "version": "2.0.0", "engine": "Production"}
+    return {"status": "online", "version": "2.2.0", "mode": "Multi-Page Production"}
 
 
 @app.get("/api/kpis")
 def get_kpis():
     try:
-        kpis = get_executive_kpis()
-        return kpis
+        return get_executive_kpis()
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("/api/auth/register-hr")
-def api_register_hr(req: HRRegisterRequest):
-    ok, msg, hr_code = register_hr_user(req.name, req.email, req.password, req.company)
+@app.post("/api/auth/send-otp")
+def api_send_otp(req: SendOTPRequest):
+    otp = generate_and_send_otp(req.email)
+    return {"success": True, "message": f"OTP sent to {req.email}", "otp_preview": otp}
+
+
+@app.post("/api/auth/verify-otp")
+def api_verify_otp(req: VerifyOTPRequest):
+    ok, msg = verify_otp_code(req.email, req.otp)
     if not ok:
         raise HTTPException(status_code=400, detail=msg)
-    return {"success": True, "message": msg, "hr_code": hr_code}
+    users = get_all_users()
+    user = users.get(req.email.strip().lower(), {})
+    user_clean = {k: v for k, v in user.items() if k not in ("password_hash", "salt")}
+    return {"success": True, "message": msg, "user": user_clean}
+
+
+@app.post("/api/auth/register-hr")
+def api_register_hr(req: HRRegisterRequest):
+    ok, msg, hr_code, otp = register_hr_user(req.name, req.email, req.password, req.company)
+    if not ok:
+        raise HTTPException(status_code=400, detail=msg)
+    return {"success": True, "message": msg, "hr_code": hr_code, "otp_preview": otp}
 
 
 @app.post("/api/auth/register-employee")
 def api_register_employee(req: EmployeeRegisterRequest):
-    ok, msg = register_employee_user(
+    ok, msg, otp = register_employee_user(
         name=req.name,
         email=req.email,
         password=req.password,
-        hr_code=req.hr_code,
-        department=req.department,
-        job_role=req.job_role,
-        target_role=req.target_role
+        hr_code=req.hr_code
     )
     if not ok:
         raise HTTPException(status_code=400, detail=msg)
-    return {"success": True, "message": msg}
+    return {"success": True, "message": msg, "otp_preview": otp}
 
 
 @app.post("/api/auth/login")
@@ -127,17 +256,92 @@ def api_login(req: LoginRequest):
     return {"success": True, "user": user}
 
 
+@app.post("/api/employee/onboard")
+def api_employee_onboard(req: EmployeeOnboardRequest):
+    dummy_skills = [{"skill": s, "importance": 4.5} for s in req.skills]
+    dummy_tools = [{"tool": s, "is_hot_tech": True} for s in req.skills if any(t in s.lower() for t in ["aws", "sql", "salesforce", "python", "crm"])]
+    
+    plan = course_matcher.generate_30_60_90_plan(req.job_role, req.target_role, dummy_skills, dummy_tools)
+    
+    ok, msg = complete_employee_onboarding(
+        email=req.email,
+        branch=req.branch,
+        department=req.department,
+        job_role=req.job_role,
+        target_role=req.target_role,
+        experience_years=req.experience_years,
+        skills=req.skills,
+        assigned_courses=plan["recommended_courses"],
+        roadmap=plan
+    )
+    if not ok:
+        raise HTTPException(status_code=400, detail=msg)
+    
+    users = get_all_users()
+    user = users.get(req.email.strip().lower(), {})
+    user_clean = {k: v for k, v in user.items() if k not in ("password_hash", "salt")}
+    return {"success": True, "message": msg, "user": user_clean, "plan": plan}
+
+
+@app.get("/api/employee/profile/{email}")
+def api_get_employee_profile(email: str):
+    users = get_all_users()
+    email_clean = email.strip().lower()
+    if email_clean not in users:
+        raise HTTPException(status_code=404, detail="Employee not found.")
+    user = users[email_clean]
+    return {k: v for k, v in user.items() if k not in ("password_hash", "salt")}
+
+
 @app.get("/api/employees/{hr_code}")
 def api_get_employees(hr_code: str):
     emps = get_employees_for_hr(hr_code)
     return {"hr_code": hr_code, "employees": emps}
 
 
+@app.get("/api/courses/for-role")
+def api_get_courses_for_role(target_role: str):
+    """Returns matching verified courses tailored specifically for a target role."""
+    courses = course_matcher.find_courses_for_skills([], target_role=target_role, limit=4)
+    return {"target_role": target_role, "courses": courses}
+
+
+@app.post("/api/hr/assign-courses")
+def api_assign_courses(req: AssignCoursesRequest):
+    users = get_all_users()
+    email_clean = req.employee_email.strip().lower()
+    if email_clean not in users:
+        raise HTTPException(status_code=404, detail="Employee account not found.")
+    
+    emp = users[email_clean]
+    curr_role = emp.get("job_role", "Sales Representatives")
+    
+    # If courses not explicitly provided, generate tailored courses for target_role
+    if not req.courses:
+        plan = course_matcher.generate_30_60_90_plan(curr_role, req.target_role, [], [])
+        courses = plan["recommended_courses"]
+        roadmap = plan
+    else:
+        courses = req.courses
+        roadmap = course_matcher.generate_30_60_90_plan(curr_role, req.target_role, [], [])
+    
+    users[email_clean]["target_role"] = req.target_role
+    users[email_clean]["assigned_courses"] = courses
+    users[email_clean]["roadmap"] = roadmap
+    save_all_users(users)
+    
+    return {
+        "success": True,
+        "message": f"Successfully updated promotion path to '{req.target_role}' and assigned {len(courses)} tailored courses!",
+        "target_role": req.target_role,
+        "assigned_courses": courses
+    }
+
+
 @app.post("/api/predict/attrition")
 def api_predict_attrition(payload: Dict[str, Any]):
     try:
-        res = predictor.predict_attrition(payload)
-        return res
+        return predictor.predict_attrition(payload)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -145,8 +349,7 @@ def api_predict_attrition(payload: Dict[str, Any]):
 @app.post("/api/predict/promotion")
 def api_predict_promotion(payload: Dict[str, Any]):
     try:
-        res = predictor.predict_promotion(payload)
-        return res
+        return predictor.predict_promotion(payload)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -154,8 +357,7 @@ def api_predict_promotion(payload: Dict[str, Any]):
 @app.post("/api/predict/training")
 def api_predict_training(payload: Dict[str, Any]):
     try:
-        res = predictor.predict_training_outcome(payload)
-        return res
+        return predictor.predict_training_outcome(payload)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -166,19 +368,10 @@ def api_search_roles(q: str = "Engineer", limit: int = 15):
     return {"query": q, "roles": results}
 
 
-@app.get("/api/roles/details/{code}")
-def api_role_details(code: str):
-    details = recommender.get_role_details(code)
-    if not details:
-        raise HTTPException(status_code=404, detail="Role not found.")
-    return details
-
-
 @app.post("/api/roles/compare")
 def api_compare_roles(req: CompareRolesRequest):
     try:
-        res = recommender.compare_roles(req.current_soc, req.target_soc)
-        return res
+        return recommender.compare_roles(req.current_soc, req.target_soc)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -196,16 +389,3 @@ def api_generate_roadmap(req: CourseRoadmapRequest):
         return {"plan": plan, "markdown": md}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-
-
-# Mount Static Files
-STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
-app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
-
-
-@app.get("/")
-def serve_index():
-    index_path = STATIC_DIR / "index.html"
-    if index_path.exists():
-        return FileResponse(str(index_path))
-    return JSONResponse({"message": "PULSE API online. Static frontend building..."})

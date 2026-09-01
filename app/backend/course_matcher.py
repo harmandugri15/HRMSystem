@@ -1,16 +1,58 @@
 """
 AI Course Discovery & 30-60-90 Day Upskilling Roadmap Engine
-Maps missing O*NET competencies and software tools to verified enterprise courses
-(Coursera, edX, LinkedIn Learning, Udemy, AWS, Google).
+Maps missing O*NET competencies, target roles, and software tools to verified enterprise courses
+(Coursera, edX, LinkedIn Learning, Udemy, AWS, Google, Wharton).
 """
 
 from typing import List, Dict, Any
 
 
 COURSE_CATALOG = [
-    # Leadership & Management
+    # Computer & Information Systems Management / IT Leadership
     {
-        "keywords": ["leadership", "management", "directing", "supervision", "coaching"],
+        "keywords": ["computer", "information systems", "information technology", "it manager", "systems manager", "chief information", "cto", "cio", "it leadership"],
+        "title": "IT Project Management & Technology Leadership",
+        "provider": "Coursera (University of Washington)",
+        "rating": 4.8,
+        "duration_hours": 36,
+        "level": "Advanced",
+        "url": "https://www.coursera.org/specializations/it-project-management",
+        "cost": "$49/mo"
+    },
+    {
+        "keywords": ["cloud", "aws", "azure", "infrastructure", "devops", "systems", "architecture", "information systems"],
+        "title": "AWS Certified Solutions Architect & Enterprise Cloud Strategy",
+        "provider": "AWS / Coursera",
+        "rating": 4.9,
+        "duration_hours": 40,
+        "level": "Intermediate to Advanced",
+        "url": "https://aws.amazon.com/certification/certified-solutions-architect-associate",
+        "cost": "$150"
+    },
+    {
+        "keywords": ["cybersecurity", "security", "governance", "compliance", "risk management", "information systems"],
+        "title": "Google Cybersecurity & Information Systems Governance",
+        "provider": "Coursera (Google)",
+        "rating": 4.8,
+        "duration_hours": 45,
+        "level": "Beginner to Intermediate",
+        "url": "https://www.coursera.org/professional-certificates/google-cybersecurity",
+        "cost": "$49/mo"
+    },
+    {
+        "keywords": ["software", "engineering", "system design", "architecture", "microservices", "computer"],
+        "title": "Software Architecture & Enterprise Distributed Systems",
+        "provider": "edX (Dartmouth)",
+        "rating": 4.9,
+        "duration_hours": 32,
+        "level": "Advanced",
+        "url": "https://www.edx.org/learn/software-development",
+        "cost": "$149"
+    },
+
+    # Leadership & Executive Management
+    {
+        "keywords": ["leadership", "management", "directing", "supervision", "coaching", "executive", "general manager"],
         "title": "Strategic Leadership and Management Specialization",
         "provider": "Coursera (University of Illinois)",
         "rating": 4.8,
@@ -20,7 +62,29 @@ COURSE_CATALOG = [
         "cost": "$49/mo"
     },
     {
-        "keywords": ["negotiation", "persuasion", "sales", "communication", "influencing"],
+        "keywords": ["executive", "wharton", "strategy", "organizational leadership", "director"],
+        "title": "Wharton Strategic Leadership & Business Transformation",
+        "provider": "Coursera (Wharton Executive Education)",
+        "rating": 4.9,
+        "duration_hours": 28,
+        "level": "Executive",
+        "url": "https://www.coursera.org/specializations/wharton-leadership",
+        "cost": "$79/mo"
+    },
+
+    # Sales & Commercial Operations
+    {
+        "keywords": ["sales", "sales manager", "commercial", "revenue", "pipeline", "quota"],
+        "title": "Sales Operations & Pipeline Management Mastery",
+        "provider": "Coursera (Northwestern Kellogg)",
+        "rating": 4.8,
+        "duration_hours": 24,
+        "level": "Intermediate",
+        "url": "https://www.coursera.org/specializations/sales-management-kellogg",
+        "cost": "$49/mo"
+    },
+    {
+        "keywords": ["negotiation", "persuasion", "influencing", "client relations", "deals"],
         "title": "Successful Negotiation: Essential Strategies and Skills",
         "provider": "Coursera (University of Michigan)",
         "rating": 4.9,
@@ -30,39 +94,39 @@ COURSE_CATALOG = [
         "cost": "$49"
     },
     {
-        "keywords": ["critical thinking", "complex problem solving", "problem solving", "decision making"],
-        "title": "Problem Solving with Critical Thinking",
-        "provider": "edX (Fullbridge)",
-        "rating": 4.7,
-        "duration_hours": 18,
-        "level": "Intermediate",
-        "url": "https://www.edx.org/course/critical-thinking-and-problem-solving",
-        "cost": "$99"
-    },
-    {
-        "keywords": ["speaking", "active listening", "presentation", "public speaking"],
-        "title": "Effective Executive Communication & Public Speaking",
-        "provider": "LinkedIn Learning",
+        "keywords": ["crm", "salesforce", "customer relationship", "hubspot", "client relations"],
+        "title": "Salesforce Sales Operations Professional Certificate",
+        "provider": "Coursera (Salesforce)",
         "rating": 4.8,
-        "duration_hours": 12,
-        "level": "All Levels",
-        "url": "https://www.linkedin.com/learning/executive-presence-principles",
-        "cost": "$35/mo"
+        "duration_hours": 28,
+        "level": "Beginner to Intermediate",
+        "url": "https://www.coursera.org/professional-certificates/salesforce-sales-operations",
+        "cost": "$49/mo"
+    },
+
+    # Data Science, AI & Analytics
+    {
+        "keywords": ["data science", "data scientist", "machine learning", "modeling", "statistics", "ai", "artificial intelligence"],
+        "title": "Machine Learning Specialization by Andrew Ng",
+        "provider": "Coursera (DeepLearning.AI / Stanford)",
+        "rating": 4.9,
+        "duration_hours": 48,
+        "level": "Intermediate",
+        "url": "https://www.coursera.org/specializations/machine-learning-introduction",
+        "cost": "$49/mo"
     },
     {
-        "keywords": ["time management", "organization", "prioritization", "operations analysis"],
-        "title": "Operational Excellence and Productivity Mastery",
-        "provider": "Udemy",
-        "rating": 4.6,
-        "duration_hours": 14,
-        "level": "Beginner",
-        "url": "https://www.udemy.com/course/operational-excellence-foundations",
-        "cost": "$29"
+        "keywords": ["data science", "data analysis", "python", "ibm", "statistics"],
+        "title": "IBM Data Science Professional Certificate",
+        "provider": "Coursera (IBM)",
+        "rating": 4.7,
+        "duration_hours": 50,
+        "level": "Beginner to Intermediate",
+        "url": "https://www.coursera.org/professional-certificates/ibm-data-science",
+        "cost": "$49/mo"
     },
-    
-    # Technical, Data & Analytics
     {
-        "keywords": ["python", "programming", "software", "development", "data analysis"],
+        "keywords": ["python", "programming", "developer", "coding", "software engineer"],
         "title": "Python for Everybody Specialization",
         "provider": "Coursera (University of Michigan)",
         "rating": 4.8,
@@ -82,16 +146,6 @@ COURSE_CATALOG = [
         "cost": "$29"
     },
     {
-        "keywords": ["data science", "machine learning", "modeling", "statistics", "ai", "mathematics"],
-        "title": "IBM Data Science Professional Certificate",
-        "provider": "Coursera (IBM)",
-        "rating": 4.7,
-        "duration_hours": 50,
-        "level": "Beginner",
-        "url": "https://www.coursera.org/professional-certificates/ibm-data-science",
-        "cost": "$49/mo"
-    },
-    {
         "keywords": ["excel", "spreadsheets", "financial analysis", "tableau", "power bi", "analytics"],
         "title": "Business Analytics with Excel and Tableau",
         "provider": "Coursera (Johns Hopkins)",
@@ -101,65 +155,67 @@ COURSE_CATALOG = [
         "url": "https://www.coursera.org/learn/business-analytics-excel",
         "cost": "$49"
     },
+
+    # Human Resources & Operations Management
     {
-        "keywords": ["cloud", "aws", "azure", "devops", "infrastructure", "docker", "kubernetes"],
-        "title": "AWS Certified Solutions Architect Associate Certification",
-        "provider": "AWS / A Cloud Guru",
-        "rating": 4.9,
-        "duration_hours": 35,
-        "level": "Intermediate",
-        "url": "https://aws.amazon.com/certification/certified-solutions-architect-associate",
-        "cost": "$150"
-    },
-    {
-        "keywords": ["crm", "salesforce", "customer relationship", "hubspot", "client relations"],
-        "title": "Salesforce Sales Operations Professional Certificate",
-        "provider": "Coursera (Salesforce)",
+        "keywords": ["human resources", "hr manager", "talent acquisition", "people analytics", "compensation"],
+        "title": "Strategic Human Resources Leadership & People Analytics",
+        "provider": "Coursera (University of Minnesota)",
         "rating": 4.8,
-        "duration_hours": 28,
-        "level": "Beginner",
-        "url": "https://www.coursera.org/professional-certificates/salesforce-sales-operations",
+        "duration_hours": 26,
+        "level": "Intermediate",
+        "url": "https://www.coursera.org/specializations/human-resource-management",
         "cost": "$49/mo"
     },
     {
-        "keywords": ["cybersecurity", "security", "governance", "compliance", "risk management"],
-        "title": "Google Cybersecurity Professional Certificate",
-        "provider": "Coursera (Google)",
+        "keywords": ["operations", "operations manager", "supply chain", "logistics", "operational excellence"],
+        "title": "Operations & Supply Chain Strategy Specialization",
+        "provider": "Coursera (Rutgers University)",
         "rating": 4.8,
-        "duration_hours": 45,
-        "level": "Beginner",
-        "url": "https://www.coursera.org/professional-certificates/google-cybersecurity",
+        "duration_hours": 30,
+        "level": "Intermediate",
+        "url": "https://www.coursera.org/specializations/supply-chain-operations",
         "cost": "$49/mo"
     }
 ]
 
 
 class CourseMatcher:
-    """Matches skill gaps and tool deficiencies to structured learning roadmaps."""
+    """Matches skill gaps, target roles and tool deficiencies to structured learning roadmaps."""
 
     def __init__(self):
         self.catalog = COURSE_CATALOG
 
-    def find_courses_for_skills(self, skills: List[Dict[str, Any]], limit: int = 4) -> List[Dict[str, Any]]:
-        """Finds most relevant courses based on missing skill names."""
+    def find_courses_for_skills(
+        self,
+        skills: List[Dict[str, Any]],
+        target_role: str = "",
+        limit: int = 4
+    ) -> List[Dict[str, Any]]:
+        """Finds most relevant courses based on missing skill names and target role."""
         matched = []
         seen_titles = set()
         
-        skill_texts = [s.get("skill", "").lower() for s in skills]
+        skill_texts = [s.get("skill", "").lower() for s in skills if isinstance(s, dict)]
+        target_role_lower = target_role.lower()
         
         for course in self.catalog:
             score = 0
+            # Check target role keyword match (high priority)
             for kw in course["keywords"]:
+                if kw in target_role_lower or target_role_lower in kw:
+                    score += 5
                 for stext in skill_texts:
                     if kw in stext or stext in kw:
-                        score += 2
+                        score += 3
+
             if score > 0 and course["title"] not in seen_titles:
                 matched.append({**course, "match_score": score})
                 seen_titles.add(course["title"])
 
         matched.sort(key=lambda x: x["match_score"], reverse=True)
         
-        # Fallback if few matches
+        # Fallback if fewer than limit
         if len(matched) < limit:
             for c in self.catalog:
                 if c["title"] not in seen_titles:
@@ -170,24 +226,45 @@ class CourseMatcher:
 
         return matched[:limit]
 
-    def generate_30_60_90_plan(self, current_role: str, target_role: str, missing_skills: List[Dict[str, Any]], missing_tools: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def generate_30_60_90_plan(
+        self,
+        current_role: str,
+        target_role: str,
+        missing_skills: List[Dict[str, Any]],
+        missing_tools: List[Dict[str, Any]]
+    ) -> Dict[str, Any]:
         """Generates a phased 30-60-90 Day Upskilling Roadmap."""
-        recommended_courses = self.find_courses_for_skills(missing_skills, limit=4)
+        recommended_courses = self.find_courses_for_skills(missing_skills, target_role=target_role, limit=4)
         
-        skill_names = [s.get("skill", "Core Competency") for s in missing_skills[:4]]
-        tool_names = [t.get("tool", "Tech Stack") for t in missing_tools[:4]]
+        skill_names = [s.get("skill", "Core Competency") for s in missing_skills if isinstance(s, dict)][:4]
+        tool_names = [t.get("tool", "Tech Stack") for t in missing_tools if isinstance(t, dict)][:4]
 
-        phase_1_skill = skill_names[0] if len(skill_names) > 0 else "Foundational Domain Knowledge"
-        phase_2_skill = skill_names[1] if len(skill_names) > 1 else (skill_names[0] if skill_names else "Advanced Problem Solving")
-        phase_3_skill = skill_names[2] if len(skill_names) > 2 else "Strategic Leadership & Execution"
+        # Customize based on target role
+        if not skill_names:
+            if "computer" in target_role.lower() or "systems" in target_role.lower() or "it" in target_role.lower():
+                skill_names = ["Cloud Infrastructure Architecture", "IT Governance & Compliance", "Agile Systems Project Management"]
+                tool_names = ["AWS / Enterprise Cloud Console", "Cybersecurity Audit Tools"]
+            elif "sales" in target_role.lower():
+                skill_names = ["Pipeline Analytics & Forecasting", "Executive Negotiation", "Revenue Operations"]
+                tool_names = ["Salesforce CRM", "Tableau Analytics"]
+            elif "data" in target_role.lower():
+                skill_names = ["Machine Learning Modeling", "Statistical Analysis", "Data Pipeline Engineering"]
+                tool_names = ["Python & PyTorch", "PostgreSQL & Snowflake"]
+            else:
+                skill_names = ["Strategic Resource Allocation", "Cross-Functional Directing", "Operational Problem Solving"]
+                tool_names = ["Enterprise ERP Systems", "BI Performance Dashboards"]
+
+        phase_1_skill = skill_names[0] if len(skill_names) > 0 else "Foundational Domain Architecture"
+        phase_2_skill = skill_names[1] if len(skill_names) > 1 else (skill_names[0] if skill_names else "Advanced Execution & Workflows")
+        phase_3_skill = skill_names[2] if len(skill_names) > 2 else f"Strategic Leadership & {target_role} Execution"
         
-        tool_p1 = tool_names[0] if len(tool_names) > 0 else "Enterprise Workflow Tools"
+        tool_p1 = tool_names[0] if len(tool_names) > 0 else "Enterprise Domain Tools"
         tool_p2 = tool_names[1] if len(tool_names) > 1 else (tool_names[0] if tool_names else "Analytics Platforms")
 
         plan = {
             "current_role": current_role,
             "target_role": target_role,
-            "total_estimated_hours": sum(c.get("duration_hours", 20) for c in recommended_courses),
+            "total_estimated_hours": sum(c.get("duration_hours", 24) for c in recommended_courses),
             "recommended_courses": recommended_courses,
             "phases": [
                 {
@@ -210,9 +287,9 @@ class CourseMatcher:
                     "goals": [
                         f"Master advanced operational workflows in {phase_2_skill}.",
                         f"Integrate {tool_p2} into daily departmental deliverables.",
-                        "Lead cross-functional sync on target team projects."
+                        f"Lead cross-functional technical sync on {target_role} project priorities."
                     ],
-                    "deliverable": "Deliver an end-to-end production workflow with documented efficiency gains."
+                    "deliverable": f"Deliver an end-to-end production deliverable aligned with {target_role} expectations."
                 },
                 {
                     "phase": "Phase 3: Days 61 – 90",

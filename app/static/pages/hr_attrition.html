@@ -1,0 +1,197 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Attrition Diagnostics Lab // PULSE HRMS</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+
+  <header class="navbar"></header>
+
+  <main class="container">
+    
+    <div style="margin-bottom: 2rem;">
+      <div class="badge-tag"><span class="brand-dot" style="width:6px; height:6px;"></span> PREDICTIVE ML CHURN LAB</div>
+      <h1 style="font-size: 2.2rem; margin-top: 6px;">Workforce Attrition Risk Diagnostics</h1>
+      <p style="color: var(--text-secondary); font-size: 0.95rem;">
+        Evaluate flight risks 90 days before resignation, isolate primary burnout catalysts, and simulate retention compensation interventions in real-time.
+      </p>
+    </div>
+
+    <div class="grid-2" style="margin-bottom: 3rem;">
+      
+      <!-- Diagnostic Form Card -->
+      <div class="card">
+        <h3>1. Employee Diagnostic Signals</h3>
+        <div style="margin-top: 1.2rem;">
+          
+          <div class="form-group">
+            <label class="form-label">Job Role</label>
+            <select class="form-select" id="att-role">
+              <option value="Sales Executive" selected>Sales Executive</option>
+              <option value="Sales Representative">Sales Representative</option>
+              <option value="Laboratory Technician">Laboratory Technician</option>
+              <option value="Research Scientist">Research Scientist</option>
+              <option value="Manufacturing Director">Manufacturing Director</option>
+              <option value="Healthcare Representative">Healthcare Representative</option>
+              <option value="Manager">Manager</option>
+            </select>
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label">Employee Age</label>
+              <input type="number" class="form-input" id="att-age" value="31">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Monthly Salary ($)</label>
+              <input type="number" class="form-input" id="att-salary" value="5400">
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label">Mandatory OverTime</label>
+              <select class="form-select" id="att-ot">
+                <option value="No">No</option>
+                <option value="Yes" selected>Yes</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Company Tenure (Years)</label>
+              <input type="number" class="form-input" id="att-tenure" value="4">
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label">Job Satisfaction (1-4)</label>
+              <select class="form-select" id="att-jobsat">
+                <option value="1">1 - Low</option>
+                <option value="2" selected>2 - Medium</option>
+                <option value="3">3 - High</option>
+                <option value="4">4 - Very High</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Work-Life Balance (1-4)</label>
+              <select class="form-select" id="att-wlb">
+                <option value="1">1 - Bad</option>
+                <option value="2" selected>2 - Good</option>
+                <option value="3">3 - Better</option>
+                <option value="4">4 - Best</option>
+              </select>
+            </div>
+          </div>
+
+          <button class="btn btn-primary" style="width: 100%; margin-top: 10px;" onclick="runPrediction()">
+            RUN ATTRITION DIAGNOSTIC
+          </button>
+        </div>
+      </div>
+
+      <!-- Diagnostic Results Card -->
+      <div class="card" id="result-card">
+        <h3>2. Retention Diagnostic Scorecard</h3>
+        
+        <div style="text-align: center; padding: 2rem 0 1.5rem 0;">
+          <div class="metric-val" id="risk-prob-val" style="font-size: 3.8rem; color: #DC2626;">68.4%</div>
+          <span class="pill pill-red" id="risk-level-pill" style="font-size: 0.85rem; padding: 6px 18px;">HIGH CHURN RISK</span>
+        </div>
+
+        <div style="border-top: 1px solid var(--border-color); padding-top: 1.2rem; margin-top: 0.5rem;">
+          <h4>Primary Flight Risk Catalysts</h4>
+          <div id="risk-drivers-list" style="margin-top: 8px; font-size: 0.92rem; color: var(--text-secondary); line-height: 1.7;">
+            • Excessive Mandatory Overtime Burden<br>
+            • Below-Market Compensation for 4-Year Tenure<br>
+            • Compressed Promotion Runway (2+ Years Stagnant)
+          </div>
+        </div>
+
+        <div style="border-top: 1px solid var(--border-color); padding-top: 1.2rem; margin-top: 1.2rem; background: #F8FAFC; border-radius: 10px; padding: 14px;">
+          <h4 style="margin-bottom: 6px;">Simulate Retention Policy Raise</h4>
+          <div style="display:flex; justify-content:space-between; font-size:0.85rem; font-weight:700; margin-bottom:4px;">
+            <span>Salary Raise:</span>
+            <span id="slider-raise-val" style="color:var(--accent-flame);">+$1,000 / mo</span>
+          </div>
+          <input type="range" id="raise-slider" min="0" max="3000" step="250" value="1000" style="width:100%; accent-color:var(--accent-flame);" oninput="simulateRaise(this.value)">
+          <div style="margin-top:8px; font-size:0.88rem; color:var(--accent-emerald); font-weight:700;" id="raise-impact-text">
+            ➔ Projected New Attrition Probability: 32.1% (Low Risk)
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <script src="/static/common.js"></script>
+  <script>
+    const user = requireAuth('hr');
+    renderNavbar('attrition');
+
+    let baseProb = 68.4;
+
+    async function runPrediction() {
+      const payload = {
+        Age: parseInt(document.getElementById('att-age').value) || 31,
+        Department: "Sales",
+        JobRole: document.getElementById('att-role').value,
+        MonthlyIncome: parseInt(document.getElementById('att-salary').value) || 5400,
+        OverTime: document.getElementById('att-ot').value,
+        YearsAtCompany: parseInt(document.getElementById('att-tenure').value) || 4,
+        JobSatisfaction: parseInt(document.getElementById('att-jobsat').value) || 2,
+        WorkLifeBalance: parseInt(document.getElementById('att-wlb').value) || 2,
+        DistanceFromHome: 10,
+        TotalWorkingYears: 6,
+        YearsInCurrentRole: 3,
+        YearsSinceLastPromotion: 2,
+        YearsWithCurrManager: 2,
+        EnvironmentSatisfaction: 3,
+        RelationshipSatisfaction: 3,
+        MaritalStatus: "Single",
+        BusinessTravel: "Travel_Rarely"
+      };
+
+      try {
+        const res = await fetch('/api/predict/attrition', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          const data = await res.json();
+          baseProb = data.attrition_probability;
+          document.getElementById('risk-prob-val').innerText = `${data.attrition_probability}%`;
+          document.getElementById('risk-prob-val').style.color = data.risk_color;
+
+          const pill = document.getElementById('risk-level-pill');
+          pill.innerText = `${data.risk_level.toUpperCase()} CHURN RISK`;
+          pill.className = (data.risk_level === 'High') ? 'pill pill-red' : (data.risk_level === 'Medium' ? 'pill pill-orange' : 'pill pill-green');
+
+          let driversHtml = '';
+          data.risk_drivers.forEach(d => {
+            driversHtml += `• ${d}<br>`;
+          });
+          document.getElementById('risk-drivers-list').innerHTML = driversHtml || 'No critical turnover catalysts detected.';
+
+          simulateRaise(document.getElementById('raise-slider').value);
+        }
+      } catch(e) {
+        console.error(e);
+      }
+    }
+
+    function simulateRaise(val) {
+      document.getElementById('slider-raise-val').innerText = `+$${Number(val).toLocaleString()} / mo`;
+      const reduction = (val / 3000) * 35;
+      const newProb = Math.max(8.0, (baseProb - reduction)).toFixed(1);
+      const level = newProb > 50 ? 'High' : (newProb > 25 ? 'Medium' : 'Low');
+      document.getElementById('raise-impact-text').innerText = `➔ Projected New Attrition Probability: ${newProb}% (${level} Risk)`;
+    }
+  </script>
+</body>
+</html>

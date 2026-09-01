@@ -1,0 +1,187 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>First-Time Setup // PULSE Employee Onboarding</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+
+  <header class="navbar"></header>
+
+  <main class="container" style="max-width: 740px; margin-top: 2rem;">
+    
+    <div class="card" style="padding: 2.5rem;">
+      <div style="text-align: center; margin-bottom: 2rem;">
+        <span class="badge-tag">STEP 2 OF 2: PROFILE SETUP</span>
+        <h2 style="font-size: 2.2rem; margin: 10px 0 6px 0;">Configure Your Career Profile</h2>
+        <p style="color: var(--text-secondary); font-size: 0.95rem; max-width: 600px; margin: 0 auto;">
+          Tell us about your branch location, current job role, and target career promotion so our AI engine can synthesize your personalized courses and 30-60-90 day roadmap.
+        </p>
+      </div>
+
+      <div id="alert-box" style="display: none; padding: 10px 14px; border-radius: 8px; font-size: 0.88rem; font-weight: 600; margin-bottom: 1rem;"></div>
+
+      <form id="onboarding-form" onsubmit="handleOnboardSubmit(event)">
+        
+        <!-- Branch / Office Location -->
+        <div class="form-group">
+          <label class="form-label">Corporate Branch / Office Location</label>
+          <select class="form-select" id="onb-branch" required>
+            <option value="New York HQ (USA)" selected>New York HQ (USA)</option>
+            <option value="London Tech Hub (UK)">London Tech Hub (UK)</option>
+            <option value="San Francisco Innovation Campus (USA)">San Francisco Innovation Campus (USA)</option>
+            <option value="Singapore Regional Office (APAC)">Singapore Regional Office (APAC)</option>
+            <option value="Berlin Engineering Centre (Germany)">Berlin Engineering Centre (Germany)</option>
+            <option value="Tokyo Operations (Japan)">Tokyo Operations (Japan)</option>
+            <option value="Fully Remote / Distributed">Fully Remote / Distributed</option>
+          </select>
+        </div>
+
+        <div class="grid-2">
+          <!-- Department -->
+          <div class="form-group">
+            <label class="form-label">Department</label>
+            <select class="form-select" id="onb-department" required>
+              <option value="Sales" selected>Sales</option>
+              <option value="Engineering & IT">Engineering & IT</option>
+              <option value="Research & Development">Research & Development</option>
+              <option value="Marketing & Growth">Marketing & Growth</option>
+              <option value="Human Resources">Human Resources</option>
+              <option value="Finance & Operations">Finance & Operations</option>
+            </select>
+          </div>
+
+          <!-- Years Experience -->
+          <div class="form-group">
+            <label class="form-label">Years of Industry Experience</label>
+            <input type="number" class="form-input" id="onb-exp" value="4" min="0" max="35" required>
+          </div>
+        </div>
+
+        <!-- Current Role -->
+        <div class="form-group">
+          <label class="form-label">Current Job Role</label>
+          <select class="form-select" id="onb-current-role" required>
+            <option value="Sales Representatives" selected>Sales Representatives</option>
+            <option value="Software Developers">Software Developers</option>
+            <option value="Data Scientists">Data Scientists</option>
+            <option value="Information Security Analysts">Information Security Analysts</option>
+            <option value="Human Resources Specialists">Human Resources Specialists</option>
+            <option value="Marketing Specialists">Marketing Specialists</option>
+            <option value="Operations Research Analysts">Operations Research Analysts</option>
+          </select>
+        </div>
+
+        <!-- Target Promotion Role -->
+        <div class="form-group">
+          <label class="form-label">Target Next-Level Promotion Role</label>
+          <select class="form-select" id="onb-target-role" required>
+            <option value="Sales Managers" selected>Sales Managers</option>
+            <option value="Computer and Information Systems Managers">Computer and Information Systems Managers</option>
+            <option value="Chief Executive Officers">Chief Executive Officers</option>
+            <option value="Human Resources Managers">Human Resources Managers</option>
+            <option value="Marketing Managers">Marketing Managers</option>
+            <option value="Operations Managers">Operations Managers</option>
+          </select>
+        </div>
+
+        <!-- Skills Selection -->
+        <div class="form-group">
+          <label class="form-label">Select Core Skills & Tools You Currently Use</label>
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 8px;">
+            <label style="display:flex; align-items:center; gap:8px; font-size:0.9rem; font-weight:600;">
+              <input type="checkbox" name="skill_cb" value="Strategic Negotiation" checked style="accent-color:var(--accent-flame);"> Strategic Negotiation
+            </label>
+            <label style="display:flex; align-items:center; gap:8px; font-size:0.9rem; font-weight:600;">
+              <input type="checkbox" name="skill_cb" value="Client Relationship Management" checked style="accent-color:var(--accent-flame);"> Client Relationship Management
+            </label>
+            <label style="display:flex; align-items:center; gap:8px; font-size:0.9rem; font-weight:600;">
+              <input type="checkbox" name="skill_cb" value="Salesforce CRM" checked style="accent-color:var(--accent-flame);"> Salesforce CRM
+            </label>
+            <label style="display:flex; align-items:center; gap:8px; font-size:0.9rem; font-weight:600;">
+              <input type="checkbox" name="skill_cb" value="Team Leadership" checked style="accent-color:var(--accent-flame);"> Team Leadership & Directing
+            </label>
+            <label style="display:flex; align-items:center; gap:8px; font-size:0.9rem; font-weight:600;">
+              <input type="checkbox" name="skill_cb" value="Python Programming" style="accent-color:var(--accent-flame);"> Python Programming
+            </label>
+            <label style="display:flex; align-items:center; gap:8px; font-size:0.9rem; font-weight:600;">
+              <input type="checkbox" name="skill_cb" value="AWS Cloud Architecture" style="accent-color:var(--accent-flame);"> AWS Cloud Architecture
+            </label>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1.5rem;" id="onb-submit-btn">
+          SYNTHESIZE MY COURSES & LAUNCH CAREER HUB ➔
+        </button>
+      </form>
+
+    </div>
+
+  </main>
+
+  <script src="/static/common.js"></script>
+  <script>
+    const user = requireAuth('employee');
+    renderNavbar('onboarding');
+
+    async function handleOnboardSubmit(e) {
+      e.preventDefault();
+      const branch = document.getElementById('onb-branch').value;
+      const department = document.getElementById('onb-department').value;
+      const experience_years = parseInt(document.getElementById('onb-exp').value) || 3;
+      const job_role = document.getElementById('onb-current-role').value;
+      const target_role = document.getElementById('onb-target-role').value;
+
+      const checkedSkills = [];
+      document.querySelectorAll('input[name="skill_cb"]:checked').forEach(cb => {
+        checkedSkills.push(cb.value);
+      });
+
+      const btn = document.getElementById('onb-submit-btn');
+      const alertBox = document.getElementById('alert-box');
+
+      btn.disabled = true;
+      btn.innerText = "SYNTHESIZING O*NET ROADMAP & ASSIGNING COURSES...";
+      alertBox.style.display = "none";
+
+      try {
+        const res = await fetch('/api/employee/onboard', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: user.email,
+            branch,
+            department,
+            job_role,
+            target_role,
+            experience_years,
+            skills: checkedSkills
+          })
+        });
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          setCurrentUser(data.user);
+          window.location.href = '/employee/dashboard';
+        } else {
+          alertBox.style.display = "block";
+          alertBox.style.background = "rgba(239, 68, 68, 0.1)";
+          alertBox.style.color = "#DC2626";
+          alertBox.innerText = data.detail || "Onboarding failed.";
+          btn.disabled = false;
+          btn.innerText = "SYNTHESIZE MY COURSES & LAUNCH CAREER HUB ➔";
+        }
+      } catch (err) {
+        alertBox.style.display = "block";
+        alertBox.style.background = "rgba(239, 68, 68, 0.1)";
+        alertBox.style.color = "#DC2626";
+        alertBox.innerText = "Network error connecting to API.";
+        btn.disabled = false;
+        btn.innerText = "SYNTHESIZE MY COURSES & LAUNCH CAREER HUB ➔";
+      }
+    }
+  </script>
+</body>
+</html>

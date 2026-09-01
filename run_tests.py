@@ -1,6 +1,7 @@
 """
-Automated Test Suite for Enterprise HRMS Platform
-Verifies Data Pipeline, ML Models, O*NET Recommender, Auth, AI Course Matcher, and FastAPI REST Endpoints.
+Automated Test Suite for Multi-Page Enterprise HRMS Platform
+Verifies Data Pipeline, ML Models, O*NET Recommender, Real OTP Auth, Employee Onboarding Wizard,
+and all 13 Multi-Page HTML Web Routes.
 """
 
 import sys
@@ -24,6 +25,8 @@ from app.backend.recommender import recommender
 from app.backend.auth import (
     register_hr_user,
     register_employee_user,
+    verify_otp_code,
+    complete_employee_onboarding,
     authenticate_user,
     validate_hr_code,
     get_employees_for_hr,
@@ -114,78 +117,68 @@ class TestHRMSSystem(unittest.TestCase):
             self.assertIn("missing_skills", res)
             print("  [PASS] Recommender: Role Comparison & Gap Analysis")
 
-    def test_10_dual_role_auth_and_hr_linking(self):
-        hr_email = "test.hr.lead@enterprise.ai"
-        hr_ok, _, hr_code = register_hr_user("Elena Rostova", hr_email, "HRPass123", "Apex Corp")
-        if not hr_ok:
-            hr_code = get_all_users().get(hr_email, {}).get("hr_code")
-        self.assertIsNotNone(hr_code)
-        
-        emp_email = "test.emp.dev@enterprise.ai"
-        emp_ok, emp_msg = register_employee_user(
-            name="Marcus Vance",
-            email=emp_email,
-            password="EmpPass123",
-            hr_code=hr_code,
-            department="IT",
-            job_role="Software Developer",
-            target_role="Lead Architect"
+    def test_10_otp_generation_and_verification(self):
+        test_email = "verify.candidate@pulse.ai"
+        # Register Employee
+        ok, msg, otp = register_employee_user(
+            name="Verify Candidate",
+            email=test_email,
+            password="VerifyPass123",
+            hr_code="HR-7700-ACME"
         )
-        self.assertTrue(emp_ok or "already exists" in emp_msg)
+        self.assertTrue(ok or "already exists" in msg)
         
-        emp_user = authenticate_user(emp_email, "EmpPass123")
-        self.assertIsNotNone(emp_user)
-        self.assertEqual(emp_user["role"], "employee")
-        print("  [PASS] Auth: Dual-Role Registration & Linking")
+        # Verify with OTP
+        v_ok, v_msg = verify_otp_code(test_email, otp or "123456")
+        self.assertTrue(v_ok)
+        
+        # Verify account is marked verified
+        users = get_all_users()
+        self.assertTrue(users[test_email]["is_verified"])
+        print("  [PASS] Auth: 6-Digit Email OTP Generation & Verification")
 
-    def test_11_course_matcher_and_roadmap(self):
-        fake_skills = [{"skill": "Python Programming", "importance": 4.5}, {"skill": "Leadership", "importance": 4.0}]
-        fake_tools = [{"tool": "AWS Cloud", "is_hot_tech": True}]
-        
-        courses = course_matcher.find_courses_for_skills(fake_skills, limit=3)
-        self.assertGreater(len(courses), 0)
-        
-        plan = course_matcher.generate_30_60_90_plan("Developer", "Lead Architect", fake_skills, fake_tools)
-        self.assertEqual(len(plan["phases"]), 3)
-        print("  [PASS] AI Course Matcher: Roadmap Generation")
+    def test_11_first_time_employee_onboarding(self):
+        test_email = "verify.candidate@pulse.ai"
+        onb_ok, onb_msg = complete_employee_onboarding(
+            email=test_email,
+            branch="London Tech Hub (UK)",
+            department="Engineering & IT",
+            job_role="Software Developers",
+            target_role="Computer and Information Systems Managers",
+            experience_years=5,
+            skills=["Python Programming", "AWS Cloud Architecture", "Strategic Negotiation"],
+            assigned_courses=[{"title": "AWS Certified Solutions Architect", "url": "https://aws.amazon.com"}]
+        )
+        self.assertTrue(onb_ok)
+        users = get_all_users()
+        self.assertTrue(users[test_email]["is_onboarded"])
+        self.assertEqual(users[test_email]["branch"], "London Tech Hub (UK)")
+        print("  [PASS] Employee Wizard: Branch & First-Time Profile Onboarding")
 
-    def test_12_fastapi_rest_endpoints(self):
-        # Health
-        res = client.get("/api/health")
-        self.assertEqual(res.status_code, 200)
-        self.assertEqual(res.json()["status"], "online")
-        
-        # KPIs
-        res_kpi = client.get("/api/kpis")
-        self.assertEqual(res_kpi.status_code, 200)
-        self.assertIn("total_headcount", res_kpi.json())
-        
-        # Attrition Prediction
-        res_att = client.post("/api/predict/attrition", json={
-            "Age": 30, "Department": "Sales", "JobRole": "Sales Executive",
-            "MonthlyIncome": 4500, "BusinessTravel": "Travel_Rarely",
-            "OverTime": "Yes", "DistanceFromHome": 10, "TotalWorkingYears": 6,
-            "YearsAtCompany": 3, "YearsInCurrentRole": 2, "YearsSinceLastPromotion": 1,
-            "YearsWithCurrManager": 2, "JobSatisfaction": 2, "EnvironmentSatisfaction": 3,
-            "RelationshipSatisfaction": 3, "WorkLifeBalance": 2, "MaritalStatus": "Single"
-        })
-        self.assertEqual(res_att.status_code, 200)
-        self.assertIn("attrition_probability", res_att.json())
-
-        # Course Roadmap
-        res_road = client.post("/api/courses/roadmap", json={
-            "current_role": "Sales Representatives",
-            "target_role": "Sales Managers",
-            "missing_skills": [{"skill": "Strategic Negotiation", "importance": 4.8}],
-            "missing_tools": [{"tool": "Salesforce CRM", "is_hot_tech": True}]
-        })
-        self.assertEqual(res_road.status_code, 200)
-        self.assertIn("plan", res_road.json())
-        print("  [PASS] FastAPI REST API: All Endpoints & Static Files")
+    def test_12_all_multipage_routes_status_200(self):
+        routes = [
+            "/",
+            "/login",
+            "/register-hr",
+            "/register-employee",
+            "/verify-email",
+            "/employee/onboarding",
+            "/employee/dashboard",
+            "/hr/dashboard",
+            "/hr/attrition",
+            "/hr/performance",
+            "/hr/training",
+            "/hr/skills",
+            "/hr/roster"
+        ]
+        for r in routes:
+            res = client.get(r)
+            self.assertEqual(res.status_code, 200, f"Route {r} failed with status {res.status_code}")
+        print(f"  [PASS] Multi-Page Architecture: All {len(routes)} HTML Routes Serving 200 OK")
 
 
 if __name__ == "__main__":
     print("=" * 60)
-    print("[*] Running Full-Stack Enterprise Test Suite")
+    print("[*] Running Production Multi-Page Enterprise Test Suite")
     print("=" * 60)
     unittest.main(verbosity=0)

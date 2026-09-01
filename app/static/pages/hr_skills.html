@@ -1,0 +1,204 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Skills & Career Navigator // PULSE HRMS</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+
+  <header class="navbar"></header>
+
+  <main class="container">
+    
+    <div style="margin-bottom: 2rem;">
+      <div class="badge-tag"><span class="brand-dot" style="width:6px; height:6px;"></span> O*NET OCCUPATIONAL FRAMEWORK</div>
+      <h1 style="font-size: 2.2rem; margin-top: 6px;">Skills Architecture & Career Transition Navigator</h1>
+      <p style="color: var(--text-secondary); font-size: 0.95rem;">
+        Map promotion pathways across 1,016 standard occupational profiles, evaluate competency alignment, and automatically generate verified 30-60-90 day course roadmaps.
+      </p>
+    </div>
+
+    <!-- Cross-Role Gap Comparator -->
+    <div class="grid-2" style="margin-bottom: 2rem;">
+      
+      <div class="card">
+        <h3>Current Base Role</h3>
+        <div class="form-group" style="margin-top: 1rem;">
+          <label class="form-label">Search Occupation Profile</label>
+          <input type="text" class="form-input" id="search-curr" value="Sales Representatives" oninput="searchRoles('curr')">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Select Standard O*NET Profile</label>
+          <select class="form-select" id="select-curr">
+            <option value="41-4012.00" selected>Sales Representatives, Wholesale and Manufacturing (41-4012.00)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Target Promotion Role</h3>
+        <div class="form-group" style="margin-top: 1rem;">
+          <label class="form-label">Search Target Occupation</label>
+          <input type="text" class="form-input" id="search-tgt" value="Sales Managers" oninput="searchRoles('tgt')">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Select Standard O*NET Profile</label>
+          <select class="form-select" id="select-tgt">
+            <option value="11-2022.00" selected>Sales Managers (11-2022.00)</option>
+          </select>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="text-align: center; margin-bottom: 2.5rem;">
+      <button class="btn btn-primary" onclick="runComparison()">GENERATE SKILL GAP & 30-60-90 DAY ROADMAP</button>
+    </div>
+
+    <!-- Comparison Results Container -->
+    <div id="comparison-results" style="display: none; margin-bottom: 3.5rem;">
+      
+      <div class="grid-2" style="margin-bottom: 2rem;">
+        <div class="card">
+          <div class="pill pill-blue">Competency Overlap</div>
+          <div class="metric-val" style="color: var(--accent-blue);" id="comp-match-pct">78%</div>
+          <div class="metric-label">Baseline Skill Alignment</div>
+        </div>
+        <div class="card">
+          <div class="pill pill-orange">Transition Feasibility</div>
+          <div class="metric-val" style="color: var(--accent-flame); font-size: 1.8rem;" id="comp-diff-label">Medium (1-2 Quarters)</div>
+          <div class="metric-label">Recommended Runway</div>
+        </div>
+      </div>
+
+      <!-- Verified Courses Grid -->
+      <h2 style="margin-bottom: 1.2rem;">Verified Enterprise Courses for Transition</h2>
+      <div class="grid-4" id="comp-courses-grid" style="margin-bottom: 2.5rem;">
+        <!-- Injected via JS -->
+      </div>
+
+      <!-- Phased 30-60-90 Roadmap -->
+      <h2 style="margin-bottom: 1.2rem;">Phased 30-60-90 Day Upskilling Roadmap</h2>
+      <div id="comp-roadmap-grid">
+        <!-- Injected via JS -->
+      </div>
+
+    </div>
+
+  </main>
+
+  <script src="/static/common.js"></script>
+  <script>
+    const user = requireAuth('hr');
+    renderNavbar('skills');
+
+    async function searchRoles(type) {
+      const q = document.getElementById(`search-${type}`).value;
+      if (q.length < 2) return;
+      try {
+        const res = await fetch(`/api/roles/search?q=${encodeURIComponent(q)}&limit=8`);
+        if (res.ok) {
+          const data = await res.json();
+          const select = document.getElementById(`select-${type}`);
+          select.innerHTML = '';
+          data.roles.forEach(r => {
+            select.innerHTML += `<option value="${r['O*NET-SOC Code']}">${r.Title} (${r['O*NET-SOC Code']})</option>`;
+          });
+        }
+      } catch(e) {
+        console.error(e);
+      }
+    }
+
+    async function runComparison() {
+      const curr_soc = document.getElementById('select-curr').value;
+      const tgt_soc = document.getElementById('select-tgt').value;
+
+      try {
+        const res = await fetch('/api/roles/compare', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ current_soc: curr_soc, target_soc: tgt_soc })
+        });
+        if (res.ok) {
+          const comp = await res.json();
+          document.getElementById('comparison-results').style.display = 'block';
+          document.getElementById('comp-match-pct').innerText = `${comp.skill_match_pct}%`;
+          document.getElementById('comp-diff-label').innerText = comp.transition_difficulty;
+
+          // Fetch Course Roadmap
+          const roadRes = await fetch('/api/courses/roadmap', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              current_role: comp.current_title,
+              target_role: comp.target_title,
+              missing_skills: comp.missing_skills,
+              missing_tools: comp.missing_software
+            })
+          });
+
+          if (roadRes.ok) {
+            const roadData = await roadRes.json();
+            
+            // Courses
+            const cGrid = document.getElementById('comp-courses-grid');
+            cGrid.innerHTML = '';
+            roadData.plan.recommended_courses.forEach(c => {
+              cGrid.innerHTML += `
+                <div class="card" style="display:flex; flex-direction:column; justify-content:space-between;">
+                  <div>
+                    <span class="pill pill-orange">${c.level}</span>
+                    <h4 style="margin: 10px 0 6px 0; font-size: 1rem;">
+                      <a href="${c.url}" target="_blank" style="color:var(--text-primary); text-decoration:none;">${c.title}</a>
+                    </h4>
+                    <div style="color: var(--text-secondary); font-size: 0.82rem; margin-bottom: 8px;">Provider: <strong>${c.provider}</strong></div>
+                  </div>
+                  <div>
+                    <div style="display:flex; justify-content:space-between; font-size:0.85rem; font-weight:700; border-top:1px solid var(--border-color); padding-top:8px;">
+                      <span>⏱️ ${c.duration_hours}h</span>
+                      <span>⭐ ${c.rating}</span>
+                      <span style="color:var(--accent-flame);">${c.cost}</span>
+                    </div>
+                    <div style="margin-top:10px; text-align:center;">
+                      <a href="${c.url}" target="_blank" class="btn btn-primary btn-sm" style="width:100%;">ENROLL NOW ➔</a>
+                    </div>
+                  </div>
+                </div>
+              `;
+            });
+
+            // Roadmap
+            const rGrid = document.getElementById('comp-roadmap-grid');
+            rGrid.innerHTML = '';
+            roadData.plan.phases.forEach(p => {
+              let goalsHtml = '';
+              p.goals.forEach(g => {
+                goalsHtml += `<div style="margin:4px 0; font-size:0.9rem; font-weight:600;">• ${g}</div>`;
+              });
+
+              rGrid.innerHTML += `
+                <div class="card">
+                  <h4>${p.phase}: ${p.title}</h4>
+                  <div style="margin: 6px 0 10px 0; font-size: 0.88rem; color: var(--text-secondary);">
+                    Focus Competency: <span class="pill pill-orange">${p.focus_skill}</span> | Target Tool: <span class="pill pill-blue">${p.target_tool}</span>
+                  </div>
+                  <div style="background:#F8FAFC; border:1px solid var(--border-color); border-radius:8px; padding:10px 14px; margin-bottom:12px;">
+                    <strong>Milestone Deliverable:</strong> <em>${p.deliverable}</em>
+                  </div>
+                  <div>${goalsHtml}</div>
+                </div>
+              `;
+            });
+
+          }
+        }
+      } catch(e) {
+        console.error(e);
+      }
+    }
+  </script>
+</body>
+</html>

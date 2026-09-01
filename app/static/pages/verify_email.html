@@ -1,0 +1,131 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Email Verification // PULSE Enterprise</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+
+  <header class="navbar"></header>
+
+  <main class="container" style="max-width: 520px; margin-top: 2rem;">
+    
+    <div class="card" style="padding: 2.2rem; text-align: center;">
+      <span class="badge-tag">SECURITY VERIFICATION</span>
+      <h2 style="font-size: 1.9rem; margin: 12px 0 6px 0;">Verify Your Work Email</h2>
+      <p style="color: var(--text-secondary); font-size: 0.92rem; margin-bottom: 1.2rem;">
+        We have sent a 6-digit verification code to <br><strong id="target-email-display" style="color: var(--text-primary);">user@company.com</strong>
+      </p>
+
+      <!-- Local dev simulation banner -->
+      <div id="otp-dev-banner" style="background: rgba(255, 71, 10, 0.08); border: 1.5px dashed var(--accent-flame); border-radius: 12px; padding: 12px; margin-bottom: 1.5rem;">
+        <span class="pill pill-orange">SIMULATED INBOX OTP</span>
+        <div style="font-size: 1.4rem; font-weight: 800; color: var(--accent-flame); font-family: 'Space Grotesk'; margin-top: 4px;" id="dev-otp-code">123456</div>
+        <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 2px;">(Generated in development mode for instant testing)</p>
+      </div>
+
+      <div id="alert-box" style="display: none; padding: 10px 14px; border-radius: 8px; font-size: 0.88rem; font-weight: 600; margin-bottom: 1rem; text-align: left;"></div>
+
+      <form id="otp-form" onsubmit="handleVerifyOTP(event)">
+        <div class="form-group" style="text-align: left;">
+          <label class="form-label" style="text-align: center;">Enter 6-Digit Code</label>
+          <input type="text" class="form-input" id="otp-input" placeholder="••••••" maxlength="6" style="text-align: center; font-size: 1.5rem; letter-spacing: 0.3em; font-family: 'Space Grotesk';" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%;" id="verify-btn">CONFIRM & COMPLETE SETUP</button>
+      </form>
+
+      <div style="margin-top: 1.5rem; font-size: 0.88rem; color: var(--text-secondary);">
+        Didn't receive the email? <a href="#" onclick="resendOTP(event)" style="color: var(--accent-flame); font-weight: 700; text-decoration: none;">Resend Code</a>
+      </div>
+
+    </div>
+
+  </main>
+
+  <script src="/static/common.js"></script>
+  <script>
+    renderNavbar('verify');
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const userEmail = urlParams.get('email') || (getCurrentUser() ? getCurrentUser().email : 'user@company.com');
+    const otpPreview = urlParams.get('otp_preview');
+
+    document.getElementById('target-email-display').innerText = userEmail;
+    if (otpPreview) {
+      document.getElementById('dev-otp-code').innerText = otpPreview;
+      document.getElementById('otp-input').value = otpPreview;
+    } else {
+      document.getElementById('dev-otp-code').innerText = '123456';
+    }
+
+    async function handleVerifyOTP(e) {
+      e.preventDefault();
+      const otp = document.getElementById('otp-input').value;
+      const btn = document.getElementById('verify-btn');
+      const alertBox = document.getElementById('alert-box');
+
+      btn.disabled = true;
+      btn.innerText = "VERIFYING...";
+      alertBox.style.display = "none";
+
+      try {
+        const res = await fetch('/api/auth/verify-otp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: userEmail, otp })
+        });
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          const user = data.user;
+          setCurrentUser(user);
+
+          if (user.role === 'employee' && !user.is_onboarded) {
+            window.location.href = '/employee/onboarding';
+          } else if (user.role === 'hr') {
+            window.location.href = '/hr/dashboard';
+          } else {
+            window.location.href = '/employee/dashboard';
+          }
+        } else {
+          alertBox.style.display = "block";
+          alertBox.style.background = "rgba(239, 68, 68, 0.1)";
+          alertBox.style.color = "#DC2626";
+          alertBox.innerText = data.detail || "Invalid or expired verification code.";
+          btn.disabled = false;
+          btn.innerText = "CONFIRM & COMPLETE SETUP";
+        }
+      } catch (err) {
+        alertBox.style.display = "block";
+        alertBox.style.background = "rgba(239, 68, 68, 0.1)";
+        alertBox.style.color = "#DC2626";
+        alertBox.innerText = "Network error during verification.";
+        btn.disabled = false;
+        btn.innerText = "CONFIRM & COMPLETE SETUP";
+      }
+    }
+
+    async function resendOTP(e) {
+      e.preventDefault();
+      try {
+        const res = await fetch('/api/auth/send-otp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: userEmail })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          document.getElementById('dev-otp-code').innerText = data.otp_preview;
+          document.getElementById('otp-input').value = data.otp_preview;
+          alert('New verification code sent!');
+        }
+      } catch(err) {
+        alert('Failed to resend code.');
+      }
+    }
+  </script>
+</body>
+</html>

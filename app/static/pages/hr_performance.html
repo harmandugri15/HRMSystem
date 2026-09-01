@@ -1,0 +1,156 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>360° Performance Matrix // PULSE HRMS</title>
+  <link rel="stylesheet" href="/static/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <header class="navbar"></header>
+
+  <main class="container">
+    
+    <div style="margin-bottom: 2rem;">
+      <div class="badge-tag"><span class="brand-dot" style="width:6px; height:6px;"></span> TALENT BENCHMARKING</div>
+      <h1 style="font-size: 2.2rem; margin-top: 6px;">360° Capability Polygon & Promotion Matrix</h1>
+      <p style="color: var(--text-secondary); font-size: 0.95rem;">
+        Objective multi-dimensional capability evaluations synthesizing KPI benchmarks, task velocity, attendance, and leadership peer feedback.
+      </p>
+    </div>
+
+    <div class="grid-2" style="margin-bottom: 3rem;">
+      
+      <!-- Input Parameters Card -->
+      <div class="card">
+        <h3>1. Contributor Evaluation Parameters</h3>
+        <div style="margin-top: 1.2rem;">
+          
+          <div class="form-group">
+            <label class="form-label">Quarterly KPI Score (0 - 100)</label>
+            <input type="number" class="form-input" id="eval-kpi" value="88">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Task Completion Velocity (%)</label>
+            <input type="number" class="form-input" id="eval-task" value="92">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Attendance Consistency (%)</label>
+            <input type="number" class="form-input" id="eval-att" value="96">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Peer Leadership Rating (1.0 - 5.0)</label>
+            <input type="number" class="form-input" id="eval-peer" value="4.6" step="0.1">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Manager Assessment Feedback (1.0 - 5.0)</label>
+            <input type="number" class="form-input" id="eval-mgr" value="4.5" step="0.1">
+          </div>
+
+          <button class="btn btn-primary" style="width: 100%; margin-top: 10px;" onclick="calculateTalentBenchmark()">
+            CALCULATE PROMOTION READINESS
+          </button>
+        </div>
+      </div>
+
+      <!-- Radar Polygon Visual Card -->
+      <div class="card">
+        <h3>2. 360° Capability Radar Visual</h3>
+        
+        <div style="height: 320px; margin-top: 1rem;">
+          <canvas id="talentChart"></canvas>
+        </div>
+
+        <div style="margin-top: 1.5rem; border-top: 1px solid var(--border-color); padding-top: 1.2rem; display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <span class="pill pill-green" id="readiness-pill" style="font-size: 0.85rem; padding: 6px 16px;">PROMOTION READY</span>
+          </div>
+          <div style="font-size: 1.2rem; font-weight: 800; font-family: 'Space Grotesk';" id="composite-score-text">
+            Productivity Index: 91.2/100
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <script src="/static/common.js"></script>
+  <script>
+    const user = requireAuth('hr');
+    renderNavbar('performance');
+
+    let talentChart = null;
+
+    function initRadar() {
+      const ctx = document.getElementById('talentChart');
+      if (!ctx) return;
+
+      talentChart = new Chart(ctx, {
+        type: 'radar',
+        data: {
+          labels: ['KPI Attainment', 'Task Velocity', 'Attendance', 'Peer Review', 'Manager Feedback'],
+          datasets: [{
+            label: 'Contributor Benchmark',
+            data: [88, 92, 96, 92, 90],
+            backgroundColor: 'rgba(255, 71, 10, 0.15)',
+            borderColor: '#FF470A',
+            pointBackgroundColor: '#FF470A',
+            borderWidth: 2.5
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            r: {
+              min: 0,
+              max: 100,
+              ticks: { display: false },
+              grid: { color: '#E2E8F0' },
+              angleLines: { color: '#E2E8F0' }
+            }
+          },
+          plugins: {
+            legend: { display: false }
+          }
+        }
+      });
+    }
+
+    function calculateTalentBenchmark() {
+      const kpi = parseFloat(document.getElementById('eval-kpi').value) || 88;
+      const task = parseFloat(document.getElementById('eval-task').value) || 92;
+      const att = parseFloat(document.getElementById('eval-att').value) || 96;
+      const peer = parseFloat(document.getElementById('eval-peer').value) || 4.6;
+      const mgr = parseFloat(document.getElementById('eval-mgr').value) || 4.5;
+
+      if (talentChart) {
+        talentChart.data.datasets[0].data = [kpi, task, att, peer * 20, mgr * 20];
+        talentChart.update();
+      }
+
+      const score = ((kpi * 0.35) + (task * 0.25) + (att * 0.15) + (peer * 20 * 0.15) + (mgr * 20 * 0.10)).toFixed(1);
+      document.getElementById('composite-score-text').innerText = `Productivity Index: ${score}/100`;
+
+      const pill = document.getElementById('readiness-pill');
+      if (score >= 80) {
+        pill.className = 'pill pill-green';
+        pill.innerText = 'PROMOTION READY';
+      } else {
+        pill.className = 'pill pill-orange';
+        pill.innerText = 'DEVELOPMENT PATHWAY';
+      }
+    }
+
+    initRadar();
+  </script>
+</body>
+</html>
