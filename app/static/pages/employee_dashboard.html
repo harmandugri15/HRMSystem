@@ -72,7 +72,7 @@
     </div>
 
     <div id="courses-section" style="margin-bottom: 3rem;">
-      <!-- Populated via JS (Cards or Empty State) -->
+      <!-- Populated via JS (Cards or Empty State with Abstract SVG) -->
     </div>
 
     <!-- 4. Interactive 30-60-90 Day Milestone Roadmap Section -->
@@ -82,7 +82,7 @@
     </div>
 
     <div id="roadmap-section" style="margin-bottom: 2.5rem;">
-      <!-- Populated via JS (Checklists or Empty State) -->
+      <!-- Populated via JS (Checklists or Empty State with Abstract SVG) -->
     </div>
 
     <!-- Download Career Plan Button Section -->
@@ -138,21 +138,21 @@
       // 1. Check if blank / not assigned by HR yet
       if (!courses || courses.length === 0) {
         coursesContainer.innerHTML = `
-          <div class="card" style="text-align: center; padding: 3rem 1.5rem; background: #F8FAFC; border: 2px dashed #CBD5E1;">
-            <div style="font-size: 2.2rem; margin-bottom: 8px;">⏳</div>
-            <h3 style="margin-bottom: 6px;">Awaiting Course Assignment</h3>
-            <p style="color: var(--text-secondary); max-width: 520px; margin: 0 auto 12px auto; font-size: 0.95rem;">
-              Your HR Director (<strong>${profile.assigned_hr || 'HR Office'}</strong>) has not assigned an active training curriculum to your profile yet.
+          <div class="card" style="text-align: center; padding: 2.5rem 1.5rem; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 16px;">
+            <img src="/static/assets/svg/empty-state-waiting.svg" alt="Awaiting Assignment" style="width: 180px; height: auto; margin: 0 auto 12px auto; display: block;">
+            <h3 style="margin-bottom: 6px; font-size: 1.3rem;">Awaiting Course Assignment</h3>
+            <p style="color: var(--text-secondary); max-width: 520px; margin: 0 auto 14px auto; font-size: 0.92rem; line-height: 1.6;">
+              Your HR Director (<strong>${profile.assigned_hr || 'HR Office'}</strong>) has not assigned an active training curriculum to your profile yet. Once assigned, your verified course catalog will appear here.
             </p>
             <span class="pill pill-orange">Pending HR Review</span>
           </div>
         `;
 
         roadmapContainer.innerHTML = `
-          <div class="card" style="text-align: center; padding: 3rem 1.5rem; background: #F8FAFC; border: 2px dashed #CBD5E1;">
-            <div style="font-size: 2.2rem; margin-bottom: 8px;">🗺️</div>
-            <h3 style="margin-bottom: 6px;">30-60-90 Day Roadmap Pending</h3>
-            <p style="color: var(--text-secondary); max-width: 520px; margin: 0 auto; font-size: 0.95rem;">
+          <div class="card" style="text-align: center; padding: 2.5rem 1.5rem; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 16px;">
+            <img src="/static/assets/svg/skill-matrix-geometry.svg" alt="Roadmap Pending" style="width: 200px; height: auto; margin: 0 auto 12px auto; display: block; opacity: 0.75;">
+            <h3 style="margin-bottom: 6px; font-size: 1.3rem;">30-60-90 Day Roadmap Pending</h3>
+            <p style="color: var(--text-secondary); max-width: 520px; margin: 0 auto; font-size: 0.92rem; line-height: 1.6;">
               Your personalized 30-60-90 day milestone roadmap will be activated as soon as your HR manager assigns your promotion curriculum.
             </p>
           </div>

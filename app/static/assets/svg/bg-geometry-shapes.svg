@@ -1,0 +1,65 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 900" width="100%" height="100%" fill="none">
+  <defs>
+    <linearGradient id="geomFlame" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF470A" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#FFA41C" stop-opacity="0.04"/>
+    </linearGradient>
+    <linearGradient id="geomBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563EB" stop-opacity="0.16"/>
+      <stop offset="100%" stop-color="#60A5FA" stop-opacity="0.03"/>
+    </linearGradient>
+    <linearGradient id="geomEmerald" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#059669" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#34D399" stop-opacity="0.03"/>
+    </linearGradient>
+    <linearGradient id="geomPurple" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7C3AED" stop-opacity="0.14"/>
+      <stop offset="100%" stop-color="#C084FC" stop-opacity="0.03"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Top Left Geometric Block -->
+  <g transform="translate(60, 60)" opacity="0.8">
+    <rect x="0" y="0" width="180" height="120" rx="18" fill="url(#geomBlue)" stroke="#BFDBFE" stroke-width="1.5" stroke-dasharray="6 6"/>
+    <circle cx="30" cy="30" r="14" fill="#DBEAFE"/>
+    <circle cx="30" cy="30" r="5" fill="#2563EB"/>
+    <line x1="60" y1="30" x2="140" y2="30" stroke="#93C5FD" stroke-width="2" stroke-linecap="round"/>
+    <line x1="30" y1="60" x2="120" y2="60" stroke="#BFDBFE" stroke-width="2" stroke-linecap="round"/>
+    <line x1="30" y1="80" x2="90" y2="80" stroke="#E2E8F0" stroke-width="2" stroke-linecap="round"/>
+  </g>
+
+  <!-- Top Right Flame Cube Matrix -->
+  <g transform="translate(1120, 100)" opacity="0.85">
+    <polygon points="70,0 140,40 70,80 0,40" fill="url(#geomFlame)" stroke="#FFC0A8" stroke-width="1.5"/>
+    <polygon points="140,40 140,120 70,160 70,80" fill="url(#geomFlame)" stroke="#FFD8C9" stroke-width="1.5"/>
+    <polygon points="0,40 70,80 70,160 0,120" fill="url(#geomFlame)" stroke="#FFE8DE" stroke-width="1.5"/>
+    <circle cx="70" cy="80" r="8" fill="#FF470A" opacity="0.8"/>
+  </g>
+
+  <!-- Center Right Emerald Pill Card -->
+  <g transform="translate(1160, 480)" opacity="0.75">
+    <rect x="0" y="0" width="160" height="90" rx="45" fill="url(#geomEmerald)" stroke="#A7F3D0" stroke-width="1.5"/>
+    <circle cx="45" cy="45" r="22" fill="#D1FAE5"/>
+    <circle cx="45" cy="45" r="8" fill="#059669"/>
+    <line x1="80" y1="45" x2="130" y2="45" stroke="#6EE7B7" stroke-width="2.5" stroke-linecap="round"/>
+  </g>
+
+  <!-- Bottom Left Purple Orbital Matrix -->
+  <g transform="translate(80, 620)" opacity="0.75">
+    <ellipse cx="90" cy="70" rx="90" ry="40" stroke="#DDD6FE" stroke-width="1.5" stroke-dasharray="4 6" transform="rotate(-15 90 70)"/>
+    <polygon points="90,30 120,50 90,70 60,50" fill="url(#geomPurple)" stroke="#C4B5FD" stroke-width="1.5"/>
+    <circle cx="90" cy="50" r="6" fill="#7C3AED"/>
+    <circle cx="160" cy="80" r="4" fill="#FF470A"/>
+    <circle cx="30" cy="60" r="4" fill="#2563EB"/>
+  </g>
+
+  <!-- Fine Floating Grid Points across screen -->
+  <g opacity="0.6">
+    <circle cx="450" cy="120" r="3" fill="#94A3B8"/>
+    <circle cx="720" cy="80" r="3" fill="#FF470A"/>
+    <circle cx="900" cy="200" r="3" fill="#2563EB"/>
+    <circle cx="340" cy="750" r="3" fill="#10B981"/>
+    <circle cx="680" cy="820" r="3" fill="#7C3AED"/>
+    <circle cx="1020" cy="760" r="3" fill="#94A3B8"/>
+  </g>
+</svg>

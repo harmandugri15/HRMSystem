@@ -6,7 +6,7 @@ Serves all dedicated HTML pages, REST API endpoints, OTP verification, live cour
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, Response
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
 from pathlib import Path
@@ -133,6 +133,14 @@ def _serve_page(filename: str):
     if p_alt.exists():
         return FileResponse(str(p_alt))
     raise HTTPException(status_code=404, detail=f"Page {filename} not found.")
+
+
+@app.api_route("/favicon.ico", methods=["GET", "HEAD"])
+def get_favicon():
+    fav = STATIC_DIR / "favicon.svg"
+    if fav.exists():
+        return FileResponse(str(fav), media_type="image/svg+xml")
+    return Response(status_code=204)
 
 
 @app.api_route("/", methods=["GET", "HEAD"])

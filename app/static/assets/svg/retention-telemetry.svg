@@ -1,0 +1,53 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 240" width="100%" height="100%" fill="none">
+  <defs>
+    <linearGradient id="retFlame" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FF470A" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#FF470A" stop-opacity="0.0"/>
+    </linearGradient>
+    <linearGradient id="retGreen" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#10B981" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#10B981" stop-opacity="0.0"/>
+    </linearGradient>
+    <linearGradient id="lineFlame" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FF470A"/>
+      <stop offset="100%" stop-color="#FF8A00"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Horizontal Measurement Grid Lines -->
+  <line x1="40" y1="40" x2="460" y2="40" stroke="#F1F5F9" stroke-width="1"/>
+  <line x1="40" y1="90" x2="460" y2="90" stroke="#F1F5F9" stroke-width="1"/>
+  <line x1="40" y1="140" x2="460" y2="140" stroke="#F1F5F9" stroke-width="1"/>
+  <line x1="40" y1="190" x2="460" y2="190" stroke="#F1F5F9" stroke-width="1"/>
+
+  <!-- Vertical Epoch Markers -->
+  <line x1="100" y1="30" x2="100" y2="200" stroke="#F1F5F9" stroke-width="1" stroke-dasharray="3 3"/>
+  <line x1="220" y1="30" x2="220" y2="200" stroke="#F1F5F9" stroke-width="1" stroke-dasharray="3 3"/>
+  <line x1="340" y1="30" x2="340" y2="200" stroke="#F1F5F9" stroke-width="1" stroke-dasharray="3 3"/>
+
+  <!-- Benchmark Stability Wave Area (Green) -->
+  <path d="M 40,160 Q 120,130 200,145 T 360,110 T 460,85 L 460,200 L 40,200 Z" fill="url(#retGreen)"/>
+  <path d="M 40,160 Q 120,130 200,145 T 360,110 T 460,85" stroke="#10B981" stroke-width="2" fill="none"/>
+
+  <!-- High Risk Volatility Wave Area (Flame) -->
+  <path d="M 40,110 Q 110,60 180,95 T 320,50 T 460,35 L 460,200 L 40,200 Z" fill="url(#retFlame)"/>
+  <path d="M 40,110 Q 110,60 180,95 T 320,50 T 460,35" stroke="url(#lineFlame)" stroke-width="2.5" fill="none"/>
+
+  <!-- Key Telemetry Inspection Points -->
+  <g transform="translate(180, 95)">
+    <circle cx="0" cy="0" r="6" fill="#FFFFFF" stroke="#FF470A" stroke-width="2"/>
+    <circle cx="0" cy="0" r="2.5" fill="#FF470A"/>
+  </g>
+
+  <g transform="translate(320, 50)">
+    <circle cx="0" cy="0" r="7" fill="#FFFFFF" stroke="#FF470A" stroke-width="2"/>
+    <circle cx="0" cy="0" r="3" fill="#FF470A"/>
+    <rect x="-45" y="-30" width="90" height="20" rx="6" fill="#0F172A"/>
+    <text x="0" y="-17" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto" font-size="9" font-weight="700" fill="#FFFFFF" text-anchor="middle">PEAK RISK (88%)</text>
+  </g>
+
+  <g transform="translate(360, 110)">
+    <circle cx="0" cy="0" r="5" fill="#FFFFFF" stroke="#10B981" stroke-width="2"/>
+    <circle cx="0" cy="0" r="2" fill="#10B981"/>
+  </g>
+</svg>

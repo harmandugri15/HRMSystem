@@ -1,0 +1,59 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="100%" height="100%" fill="none">
+  <defs>
+    <linearGradient id="bgFlameGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF470A" stop-opacity="0.14"/>
+      <stop offset="60%" stop-color="#FFA41C" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#FF470A" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="bgBlueGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563EB" stop-opacity="0.12"/>
+      <stop offset="60%" stop-color="#38BDF8" stop-opacity="0.06"/>
+      <stop offset="100%" stop-color="#2563EB" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="bgPurpleGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7C3AED" stop-opacity="0.10"/>
+      <stop offset="100%" stop-color="#C084FC" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="bgBlurLarge" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="60"/>
+    </filter>
+  </defs>
+
+  <!-- Giant Ambient Color Mesh Blobs -->
+  <circle cx="1050" cy="120" r="280" fill="url(#bgFlameGlow)" filter="url(#bgBlurLarge)"/>
+  <circle cx="120" cy="550" r="320" fill="url(#bgBlueGlow)" filter="url(#bgBlurLarge)"/>
+  <circle cx="950" cy="650" r="260" fill="url(#bgPurpleGlow)" filter="url(#bgBlurLarge)"/>
+
+  <!-- Top Right Geometric Wireframe Cluster -->
+  <g transform="translate(980, 40)" opacity="0.45">
+    <polygon points="60,0 120,35 60,70 0,35" stroke="#FF470A" stroke-width="1.2" stroke-dasharray="3 4"/>
+    <polygon points="120,35 120,105 60,140 60,70" stroke="#FF470A" stroke-width="1.2"/>
+    <polygon points="0,35 60,70 60,140 0,105" stroke="#CBD5E1" stroke-width="1.2"/>
+    <circle cx="60" cy="70" r="3.5" fill="#FF470A"/>
+  </g>
+
+  <!-- Left Center Isometric Hexagon Array -->
+  <g transform="translate(40, 260)" opacity="0.4">
+    <polygon points="30,0 60,17 60,52 30,69 0,52 0,17" stroke="#2563EB" stroke-width="1.2" stroke-dasharray="4 4"/>
+    <polygon points="30,12 50,24 50,48 30,60 10,48 10,24" stroke="#93C5FD" stroke-width="1"/>
+    <circle cx="30" cy="35" r="3" fill="#2563EB"/>
+    
+    <polygon points="80,50 110,67 110,102 80,119 50,102 50,67" stroke="#CBD5E1" stroke-width="1"/>
+    <circle cx="80" cy="85" r="2.5" fill="#10B981"/>
+  </g>
+
+  <!-- Bottom Right Contour Curves -->
+  <g opacity="0.35">
+    <path d="M 850,550 C 950,480 1050,620 1180,520" stroke="#FF470A" stroke-width="1.5" stroke-dasharray="4 6"/>
+    <path d="M 800,600 C 920,530 1020,680 1160,580" stroke="#2563EB" stroke-width="1.2"/>
+  </g>
+
+  <!-- Floating Star & Cross Telemetry Accents -->
+  <g opacity="0.5">
+    <path d="M 280,140 L 290,140 M 285,135 L 285,145" stroke="#94A3B8" stroke-width="1.5"/>
+    <path d="M 820,240 L 830,240 M 825,235 L 825,245" stroke="#FF470A" stroke-width="1.5"/>
+    <path d="M 180,720 L 190,720 M 185,715 L 185,725" stroke="#2563EB" stroke-width="1.5"/>
+    <circle cx="500" cy="80" r="2" fill="#CBD5E1"/>
+    <circle cx="700" cy="740" r="2" fill="#CBD5E1"/>
+  </g>
+</svg>

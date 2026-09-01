@@ -1,0 +1,37 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 120" width="100%" height="100%" fill="none">
+  <defs>
+    <linearGradient id="authFlame" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF470A"/>
+      <stop offset="100%" stop-color="#FF7A00"/>
+    </linearGradient>
+    <linearGradient id="authBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563EB"/>
+      <stop offset="100%" stop-color="#38BDF8"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background decorative lines -->
+  <line x1="0" y1="60" x2="360" y2="60" stroke="#F1F5F9" stroke-width="1.5" stroke-dasharray="4 6"/>
+  <line x1="180" y1="0" x2="180" y2="120" stroke="#F1F5F9" stroke-width="1.5" stroke-dasharray="4 6"/>
+
+  <!-- Interlocking geometric circles and arcs -->
+  <circle cx="180" cy="60" r="45" stroke="#E2E8F0" stroke-width="1.5"/>
+  <circle cx="180" cy="60" r="28" stroke="url(#authFlame)" stroke-width="2" stroke-dasharray="6 3"/>
+  <circle cx="180" cy="60" r="8" fill="#FF470A"/>
+
+  <!-- Left Accent Orbit -->
+  <circle cx="70" cy="60" r="32" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1.5"/>
+  <path d="M 70,28 A 32,32 0 0,1 102,60" stroke="url(#authBlue)" stroke-width="2.5" stroke-linecap="round"/>
+  <circle cx="102" cy="60" r="4" fill="#2563EB"/>
+
+  <!-- Right Accent Polygon / Stepped Lines -->
+  <g transform="translate(260, 35)">
+    <rect x="0" y="0" width="50" height="50" rx="10" fill="#FFF7ED" stroke="#FFEDD5" stroke-width="1.5"/>
+    <path d="M 12,38 L 22,25 L 32,30 L 40,14" stroke="#FF470A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="40" cy="14" r="3" fill="#FF470A"/>
+  </g>
+
+  <!-- Data Stream Nodes -->
+  <circle cx="125" cy="60" r="3" fill="#94A3B8"/>
+  <circle cx="235" cy="60" r="3" fill="#94A3B8"/>
+</svg>

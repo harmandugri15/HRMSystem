@@ -119,10 +119,10 @@
       "AWS Cloud Architecture",
       "Strategic Negotiation"
     ],
-    "kpi_score": 93.3,
-    "attendance": 98.9,
-    "task_completion": 91.3,
-    "peer_rating": 4.4,
+    "kpi_score": 85.7,
+    "attendance": 94.0,
+    "task_completion": 89.9,
+    "peer_rating": 4.6,
     "assigned_courses": [],
     "roadmap": {}
   },
@@ -361,6 +361,223 @@
             "Formal review of promotion eligibility portfolio with HR leadership."
           ],
           "deliverable": "Final readiness evaluation and formal transition into Computer and Information Systems Managers."
+        }
+      ]
+    }
+  },
+  "hr@gmail.com": {
+    "name": "Kamaldeep",
+    "email": "hr@gmail.com",
+    "password_hash": "27c48c9303737285717ec03b7b4f9aeaefdb86187ae72587eb083bdf9789d404",
+    "salt": "702ac84074ac45d5fc57738ffca95bd2",
+    "role": "hr",
+    "company": "ABC group",
+    "hr_code": "HR-1049-ABCG",
+    "is_verified": true,
+    "is_onboarded": true
+  },
+  "aman@gmail.com": {
+    "name": "aman",
+    "email": "aman@gmail.com",
+    "password_hash": "c718bbe99d997428fcf0e5bf7ff8218ee28ca9e5497a38408a1e0b97549fbe27",
+    "salt": "15743b447cd485177140cc519c0a880f",
+    "role": "employee",
+    "company": "ABC group",
+    "hr_code": "HR-1049-ABCG",
+    "assigned_hr": "hr@gmail.com",
+    "is_verified": true,
+    "is_onboarded": true,
+    "branch": "New York HQ (USA)",
+    "department": "Engineering & IT",
+    "job_role": "Data Scientists",
+    "target_role": "Sales Managers",
+    "experience_years": 4,
+    "skills": [
+      "Client Relationship Management",
+      "Team Leadership"
+    ],
+    "kpi_score": 84.0,
+    "attendance": 98.4,
+    "task_completion": 89.6,
+    "peer_rating": 4.8,
+    "assigned_courses": [
+      {
+        "title": "Python For Applied Data Science Ai Professional Program",
+        "provider": "Coursera Partner University",
+        "rating": 4.8,
+        "duration_hours": 28,
+        "level": "Intermediate",
+        "url": "https://www.coursera.org/learn/python-for-applied-data-science-ai",
+        "cost": "$49/mo",
+        "source": "Live Web Scrape",
+        "match_score": 3
+      },
+      {
+        "title": "What Is Datascience Professional Program",
+        "provider": "Coursera Partner University",
+        "rating": 4.8,
+        "duration_hours": 28,
+        "level": "Intermediate",
+        "url": "https://www.coursera.org/learn/what-is-datascience",
+        "cost": "$49/mo",
+        "source": "Live Web Scrape",
+        "match_score": 3
+      },
+      {
+        "query_tags": [
+          "machine learning",
+          "data science",
+          "python",
+          "ai"
+        ],
+        "title": "Machine Learning Specialization by Andrew Ng",
+        "provider": "Coursera (Stanford Online)",
+        "rating": 4.9,
+        "duration_hours": 48,
+        "level": "Beginner to Intermediate",
+        "url": "https://www.coursera.org/specializations/machine-learning-introduction",
+        "cost": "$49/mo",
+        "source": "Verified Registry",
+        "match_score": 2
+      },
+      {
+        "query_tags": [
+          "data analytics",
+          "sql",
+          "tableau",
+          "power bi"
+        ],
+        "title": "Google Data Analytics Professional Certificate",
+        "provider": "Coursera (Google)",
+        "rating": 4.8,
+        "duration_hours": 60,
+        "level": "Beginner",
+        "url": "https://www.coursera.org/professional-certificates/google-data-analytics",
+        "cost": "$49/mo",
+        "source": "Verified Registry",
+        "match_score": 2
+      },
+      {
+        "title": "Mastering Data Science: Complete Professional Curriculum",
+        "provider": "Coursera (Coursera Partner Institution)",
+        "rating": 4.8,
+        "duration_hours": 24,
+        "level": "All Levels",
+        "url": "https://www.coursera.org/search?query=Data+science",
+        "cost": "$49/mo",
+        "source": "Live Catalog Search",
+        "match_score": 1
+      }
+    ],
+    "roadmap": {
+      "current_role": "Data Scientists",
+      "target_role": "Sales Managers",
+      "total_estimated_hours": 145,
+      "recommended_courses": [
+        {
+          "title": "Python For Applied Data Science Ai Professional Program",
+          "provider": "Coursera Partner University",
+          "rating": 4.8,
+          "duration_hours": 28,
+          "level": "Intermediate",
+          "url": "https://www.coursera.org/learn/python-for-applied-data-science-ai",
+          "cost": "$49/mo",
+          "source": "Live Web Scrape",
+          "match_score": 3
+        },
+        {
+          "title": "What Is Datascience Professional Program",
+          "provider": "Coursera Partner University",
+          "rating": 4.8,
+          "duration_hours": 28,
+          "level": "Intermediate",
+          "url": "https://www.coursera.org/learn/what-is-datascience",
+          "cost": "$49/mo",
+          "source": "Live Web Scrape",
+          "match_score": 3
+        },
+        {
+          "query_tags": [
+            "machine learning",
+            "data science",
+            "python",
+            "ai"
+          ],
+          "title": "Machine Learning Specialization by Andrew Ng",
+          "provider": "Coursera (Stanford Online)",
+          "rating": 4.9,
+          "duration_hours": 48,
+          "level": "Beginner to Intermediate",
+          "url": "https://www.coursera.org/specializations/machine-learning-introduction",
+          "cost": "$49/mo",
+          "source": "Verified Registry",
+          "match_score": 2
+        },
+        {
+          "query_tags": [
+            "data analytics",
+            "sql",
+            "tableau",
+            "power bi"
+          ],
+          "title": "Google Data Analytics Professional Certificate",
+          "provider": "Coursera (Google)",
+          "rating": 4.8,
+          "duration_hours": 60,
+          "level": "Beginner",
+          "url": "https://www.coursera.org/professional-certificates/google-data-analytics",
+          "cost": "$49/mo",
+          "source": "Verified Registry",
+          "match_score": 2
+        },
+        {
+          "title": "Mastering Data Science: Complete Professional Curriculum",
+          "provider": "Coursera (Coursera Partner Institution)",
+          "rating": 4.8,
+          "duration_hours": 24,
+          "level": "All Levels",
+          "url": "https://www.coursera.org/search?query=Data+science",
+          "cost": "$49/mo",
+          "source": "Live Catalog Search",
+          "match_score": 1
+        }
+      ],
+      "phases": [
+        {
+          "phase": "Phase 1: Days 1 \u2013 30",
+          "title": "Core Foundations & Tool Ramp-Up",
+          "focus_skill": "Pipeline Analytics & Forecasting",
+          "target_tool": "Salesforce CRM",
+          "goals": [
+            "Complete primary certification module in Pipeline Analytics & Forecasting.",
+            "Gain baseline working fluency with Salesforce CRM.",
+            "Establish bi-weekly 1:1 mentorship milestone review with department lead."
+          ],
+          "deliverable": "Demonstrate practical tool proficiency on a sandbox sprint project."
+        },
+        {
+          "phase": "Phase 2: Days 31 \u2013 60",
+          "title": "Advanced Execution & Applied Projects",
+          "focus_skill": "Executive Negotiation",
+          "target_tool": "Tableau Analytics",
+          "goals": [
+            "Master advanced operational workflows in Executive Negotiation.",
+            "Integrate Tableau Analytics into daily departmental deliverables.",
+            "Lead cross-functional technical sync on Sales Managers project priorities."
+          ],
+          "deliverable": "Deliver an end-to-end production deliverable aligned with Sales Managers expectations."
+        },
+        {
+          "phase": "Phase 3: Days 61 \u2013 90",
+          "title": "Autonomous Leadership & Role Transition",
+          "focus_skill": "Revenue Operations",
+          "target_tool": "Cross-Functional Architecture",
+          "goals": [
+            "Demonstrate mastery in Revenue Operations under live operational conditions.",
+            "Shadow incumbent Sales Managers on strategic planning initiatives.",
+            "Formal review of promotion eligibility portfolio with HR leadership."
+          ],
+          "deliverable": "Final readiness evaluation and formal transition into Sales Managers."
         }
       ]
     }

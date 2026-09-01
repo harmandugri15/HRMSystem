@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Fireart Studio Exact Design System
  * Canvas: #FAFAFA | Cards: #FFFFFF | Accent: #FF470A (Flame Orange) | Text: #000000
  * Zero Emojis, Pure Minimalist Dribbble/Agency Digital Product Aesthetic.
@@ -29,11 +29,50 @@
 }
 
 body {
-  background-color: var(--canvas-bg);
+  background-color: #F8FAFC;
+  background-image: 
+    radial-gradient(rgba(148, 163, 184, 0.28) 1.2px, transparent 1.2px),
+    radial-gradient(rgba(255, 71, 10, 0.08) 1.6px, transparent 1.6px);
+  background-size: 32px 32px, 128px 128px;
+  background-position: 0 0, 16px 16px;
   font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   color: var(--text-primary);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* Global Ambient Background SVG Blocks Layer */
+.bg-ambient-layer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.bg-ambient-mesh {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('/static/assets/svg/bg-block-mesh.svg') no-repeat center top / cover;
+  opacity: 0.9;
+}
+
+.bg-ambient-shapes {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('/static/assets/svg/bg-geometry-shapes.svg') no-repeat center top / cover;
+  opacity: 0.95;
 }
 
 /* Headings */
@@ -362,4 +401,14 @@ h1, h2, h3, h4, h5, h6 {
 
 .data-table tr:hover td {
   background: #F8FAFC;
+}
+
+/* Responsive Styles */
+@media (max-width: 850px) {
+  .hero-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .grid-4, .grid-3, .grid-2 {
+    grid-template-columns: 1fr !important;
+  }
 }

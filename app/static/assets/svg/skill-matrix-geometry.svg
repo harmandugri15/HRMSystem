@@ -1,0 +1,75 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="100%" height="100%" fill="none">
+  <defs>
+    <linearGradient id="smFlame" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF470A"/>
+      <stop offset="100%" stop-color="#FFA41C"/>
+    </linearGradient>
+    <linearGradient id="smBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563EB"/>
+      <stop offset="100%" stop-color="#60A5FA"/>
+    </linearGradient>
+    <linearGradient id="smEmerald" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#059669"/>
+      <stop offset="100%" stop-color="#34D399"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Ambient background glow -->
+  <circle cx="200" cy="150" r="90" fill="url(#smBlue)" opacity="0.08"/>
+
+  <!-- Network Interconnection Paths -->
+  <path d="M 80,180 L 150,110 L 250,110 L 320,180 L 250,230 L 150,230 Z" stroke="#E2E8F0" stroke-width="2" stroke-dasharray="4 4" fill="none"/>
+  <path d="M 150,110 L 200,160 L 250,110" stroke="url(#smFlame)" stroke-width="2.5" fill="none" opacity="0.8"/>
+  <path d="M 200,160 L 250,230" stroke="url(#smEmerald)" stroke-width="2.5" fill="none" opacity="0.8"/>
+  <path d="M 80,180 L 200,160 L 150,230" stroke="url(#smBlue)" stroke-width="2" fill="none" opacity="0.7"/>
+
+  <!-- Node 1: Current Competency (Blue) -->
+  <g transform="translate(60, 160)">
+    <circle cx="20" cy="20" r="18" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="2"/>
+    <circle cx="20" cy="20" r="7" fill="#2563EB"/>
+  </g>
+
+  <!-- Node 2: Core Learning Bridge (Flame) -->
+  <g transform="translate(130, 90)">
+    <circle cx="20" cy="20" r="22" fill="#FFF7ED" stroke="#FFEDD5" stroke-width="2"/>
+    <circle cx="20" cy="20" r="9" fill="url(#smFlame)"/>
+  </g>
+
+  <!-- Node 3: Skill Milestone (Emerald) -->
+  <g transform="translate(230, 90)">
+    <circle cx="20" cy="20" r="20" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="2"/>
+    <circle cx="20" cy="20" r="8" fill="#059669"/>
+  </g>
+
+  <!-- Node 4: Target Master Position (Central Hub) -->
+  <g transform="translate(180, 140)">
+    <circle cx="20" cy="20" r="26" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
+    <circle cx="20" cy="20" r="12" fill="url(#smFlame)"/>
+    <circle cx="20" cy="20" r="4" fill="#FFFFFF"/>
+  </g>
+
+  <!-- Node 5: Advanced Leadership (Purple) -->
+  <g transform="translate(300, 160)">
+    <circle cx="20" cy="20" r="18" fill="#FAF5FF" stroke="#E9D5FF" stroke-width="2"/>
+    <circle cx="20" cy="20" r="7" fill="#9333EA"/>
+  </g>
+
+  <!-- Node 6: Applied Project (Slate) -->
+  <g transform="translate(230, 210)">
+    <circle cx="20" cy="20" r="18" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="2"/>
+    <circle cx="20" cy="20" r="6" fill="#475569"/>
+  </g>
+
+  <!-- Node 7: Domain Tool Ramp-up -->
+  <g transform="translate(130, 210)">
+    <circle cx="20" cy="20" r="18" fill="#F0FDFA" stroke="#CCFBF1" stroke-width="2"/>
+    <circle cx="20" cy="20" r="6" fill="#0D9488"/>
+  </g>
+
+  <!-- Floating telemetry badges -->
+  <rect x="270" y="60" width="80" height="22" rx="11" fill="#0F172A"/>
+  <text x="310" y="75" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">+35% GAP CLOSED</text>
+
+  <rect x="50" y="235" width="70" height="20" rx="10" fill="#FF470A"/>
+  <text x="85" y="249" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto" font-size="9" font-weight="700" fill="#FFFFFF" text-anchor="middle">O*NET VERIFIED</text>
+</svg>

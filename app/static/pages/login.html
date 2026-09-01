@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -10,13 +10,14 @@
 
   <header class="navbar"></header>
 
-  <main class="container" style="max-width: 540px; margin-top: 2rem;">
+  <main class="container" style="max-width: 520px; margin-top: 2rem;">
     
-    <div class="card" style="padding: 2.2rem;">
-      <div style="text-align: center; margin-bottom: 1.5rem;">
-        <span class="badge-tag">AUTHENTICATION</span>
-        <h2 style="font-size: 2rem; margin: 10px 0 6px 0;">Sign In to PULSE</h2>
-        <p style="color: var(--text-secondary); font-size: 0.92rem;">Access your executive dashboard or employee growth hub.</p>
+    <div class="card" style="padding: 2.2rem; border-radius: 16px;">
+      <div style="text-align: center; margin-bottom: 1.2rem;">
+        <img src="/static/assets/svg/auth-abstract-art.svg" alt="Authentication Telemetry" style="width: 220px; height: auto; margin: 0 auto 10px auto; display: block;">
+        <span class="badge-tag">ENTERPRISE ACCESS</span>
+        <h2 style="font-size: 1.9rem; margin: 8px 0 4px 0;">Sign In to PULSE</h2>
+        <p style="color: var(--text-secondary); font-size: 0.9rem;">Access your executive dashboard or employee growth hub.</p>
       </div>
 
       <div id="alert-box" style="display: none; padding: 10px 14px; border-radius: 8px; font-size: 0.88rem; font-weight: 600; margin-bottom: 1rem;"></div>
@@ -61,14 +62,14 @@
 
     async function handleLoginSubmit(e) {
       e.preventDefault();
-      const email = document.getElementById('login-email').value;
+      const email = document.getElementById('login-email').value.trim();
       const password = document.getElementById('login-password').value;
-      const btn = document.getElementById('login-submit-btn');
       const alertBox = document.getElementById('alert-box');
+      const submitBtn = document.getElementById('login-submit-btn');
 
-      btn.disabled = true;
-      btn.innerText = "VERIFYING...";
-      alertBox.style.display = "none";
+      submitBtn.disabled = true;
+      submitBtn.innerText = 'AUTHENTICATING...';
+      alertBox.style.display = 'none';
 
       try {
         const res = await fetch('/api/auth/login', {
@@ -77,41 +78,43 @@
           body: JSON.stringify({ email, password })
         });
         const data = await res.json();
-        
-        if (res.ok && data.success) {
+
+        if (res.ok) {
           setCurrentUser(data.user);
-          
-          if (!data.user.is_verified) {
-            window.location.href = `/verify-email?email=${encodeURIComponent(data.user.email)}`;
-            return;
-          }
-
-          if (data.user.role === 'employee' && !data.user.is_onboarded) {
-            window.location.href = '/employee/onboarding';
-            return;
-          }
-
           if (data.user.role === 'hr') {
             window.location.href = '/hr/dashboard';
           } else {
-            window.location.href = '/employee/dashboard';
+            if (!data.user.is_onboarded) {
+              window.location.href = '/employee/onboarding';
+            } else {
+              window.location.href = '/employee/dashboard';
+            }
           }
         } else {
-          alertBox.style.display = "block";
-          alertBox.style.background = "rgba(239, 68, 68, 0.1)";
-          alertBox.style.color = "#DC2626";
-          alertBox.innerText = data.detail || "Invalid email or password.";
-          btn.disabled = false;
-          btn.innerText = "SIGN IN";
+          alertBox.style.display = 'block';
+          alertBox.style.background = '#FEE2E2';
+          alertBox.style.color = '#991B1B';
+          alertBox.style.border = '1px solid #F87171';
+          alertBox.innerText = data.detail || 'Login failed. Please check your credentials.';
         }
       } catch (err) {
-        alertBox.style.display = "block";
-        alertBox.style.background = "rgba(239, 68, 68, 0.1)";
-        alertBox.style.color = "#DC2626";
-        alertBox.innerText = "Network error connecting to API server.";
-        btn.disabled = false;
-        btn.innerText = "SIGN IN";
+        console.error("Login error:", err);
+        alertBox.style.display = 'block';
+        alertBox.style.background = '#FEE2E2';
+        alertBox.style.color = '#991B1B';
+        alertBox.innerText = err.message || 'Login error. Please try again.';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'SIGN IN';
       }
+    }
+
+    async function launchQuickDemo(role) {
+      const email = role === 'hr' ? 'hr@pulse.ai' : 'alex@pulse.ai';
+      const pass = role === 'hr' ? 'HR@123' : 'Emp@123';
+      document.getElementById('login-email').value = email;
+      document.getElementById('login-password').value = pass;
+      document.getElementById('login-form').dispatchEvent(new Event('submit'));
     }
   </script>
 </body>

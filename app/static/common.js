@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Shared Client Utilities for PULSE Multi-Page Web Platform
  * Handles session state, dynamic navigation bar, alerts, and API utilities.
  */
@@ -18,6 +18,10 @@ function getCurrentUser() {
 // Set Active Session
 function setCurrentUser(user) {
   localStorage.setItem("pulse_user", JSON.stringify(user));
+}
+
+function saveAuth(user) {
+  setCurrentUser(user);
 }
 
 // Sign Out User
@@ -146,4 +150,20 @@ function launchQuickDemo(role) {
     setCurrentUser(demoEmp);
     window.location.href = "/employee/dashboard";
   }
+}
+
+// Global Ambient Background SVG Blocks Injector
+function injectAmbientBackground() {
+  if (!document.querySelector('.bg-ambient-layer')) {
+    const layer = document.createElement('div');
+    layer.className = 'bg-ambient-layer';
+    layer.innerHTML = '<div class="bg-ambient-mesh"></div><div class="bg-ambient-shapes"></div>';
+    document.body.prepend(layer);
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', injectAmbientBackground);
+} else {
+  injectAmbientBackground();
 }

@@ -3,76 +3,72 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HR Registration // PULSE Enterprise</title>
+  <title>Register HR Organization // PULSE HRMS</title>
   <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
 
   <header class="navbar"></header>
 
-  <main class="container" style="max-width: 580px; margin-top: 2rem;">
+  <main class="container" style="max-width: 540px; margin-top: 2rem;">
     
-    <div class="card" style="padding: 2.2rem;">
-      <div style="text-align: center; margin-bottom: 1.5rem;">
+    <div class="card" style="padding: 2.2rem; border-radius: 16px;">
+      <div style="text-align: center; margin-bottom: 1.2rem;">
+        <img src="/static/assets/svg/auth-abstract-art.svg" alt="HR Registration Telemetry" style="width: 220px; height: auto; margin: 0 auto 10px auto; display: block;">
         <span class="badge-tag">HR EXECUTIVE ONBOARDING</span>
-        <h2 style="font-size: 2rem; margin: 10px 0 6px 0;">Create HR Account</h2>
-        <p style="color: var(--text-secondary); font-size: 0.92rem;">
-          Get your company HR Code and access full workforce retention diagnostics.
-        </p>
+        <h2 style="font-size: 1.9rem; margin: 8px 0 4px 0;">Create HR Organization</h2>
+        <p style="color: var(--text-secondary); font-size: 0.9rem;">Auto-generates a unique HR Invite Code for your staff.</p>
       </div>
 
       <div id="alert-box" style="display: none; padding: 10px 14px; border-radius: 8px; font-size: 0.88rem; font-weight: 600; margin-bottom: 1rem;"></div>
 
-      <form id="hr-reg-form" onsubmit="handleHRRegSubmit(event)">
+      <form id="reg-hr-form" onsubmit="handleHRRegister(event)">
         <div class="form-group">
-          <label class="form-label">Full Name</label>
+          <label class="form-label">HR Director / Executive Name</label>
           <input type="text" class="form-input" id="hr-name" placeholder="e.g. Sarah Jenkins" required>
         </div>
 
         <div class="form-group">
           <label class="form-label">Company / Organization Name</label>
-          <input type="text" class="form-input" id="hr-company" placeholder="e.g. Acme Global Corp" required>
+          <input type="text" class="form-input" id="hr-company" placeholder="e.g. Acme Global Technologies" required>
         </div>
 
         <div class="form-group">
-          <label class="form-label">Work Email</label>
+          <label class="form-label">Corporate Email</label>
           <input type="email" class="form-input" id="hr-email" placeholder="sarah@acme.com" required>
         </div>
 
         <div class="form-group">
-          <label class="form-label">Password (min 6 characters)</label>
-          <input type="password" class="form-input" id="hr-password" placeholder="••••••••" minlength="6" required>
+          <label class="form-label">Password</label>
+          <input type="password" class="form-input" id="hr-password" placeholder="••••••••" required>
         </div>
 
-        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 8px;" id="hr-reg-btn">CREATE HR ACCOUNT & GENERATE CODE</button>
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 8px;" id="hr-submit-btn">CREATE HR SUITE & GET HR CODE ➔</button>
       </form>
 
-      <div style="margin-top: 1.8rem; border-top: 1px solid var(--border-color); padding-top: 1.4rem; text-align: center;">
-        <div style="font-size: 0.88rem; color: var(--text-secondary);">
-          Already have an account? <a href="/login" style="color: var(--accent-flame); font-weight: 700; text-decoration: none;">Sign In</a>
-        </div>
+      <div style="margin-top: 1.8rem; border-top: 1px solid var(--border-color); padding-top: 1.2rem; text-align: center;">
+        <div style="font-size: 0.88rem; color: var(--text-secondary);">Already have an account? <a href="/login" style="color: var(--accent-flame); font-weight: 700; text-decoration: none;">Sign in here</a></div>
       </div>
-
     </div>
 
   </main>
 
   <script src="/static/common.js"></script>
   <script>
-    renderNavbar('register_hr');
+    renderNavbar('reg_hr');
 
-    async function handleHRRegSubmit(e) {
+    async function handleHRRegister(e) {
       e.preventDefault();
-      const name = document.getElementById('hr-name').value;
-      const company = document.getElementById('hr-company').value;
-      const email = document.getElementById('hr-email').value;
+      const name = document.getElementById('hr-name').value.trim();
+      const company = document.getElementById('hr-company').value.trim();
+      const email = document.getElementById('hr-email').value.trim();
       const password = document.getElementById('hr-password').value;
-      const btn = document.getElementById('hr-reg-btn');
       const alertBox = document.getElementById('alert-box');
+      const submitBtn = document.getElementById('hr-submit-btn');
 
-      btn.disabled = true;
-      btn.innerText = "CREATING ACCOUNT...";
-      alertBox.style.display = "none";
+      submitBtn.disabled = true;
+      submitBtn.innerText = 'GENERATING HR CODE & OTP...';
+      alertBox.style.display = 'none';
 
       try {
         const res = await fetch('/api/auth/register-hr', {
@@ -81,34 +77,26 @@
           body: JSON.stringify({ name, company, email, password })
         });
         const data = await res.json();
-        
-        if (res.ok && data.success) {
-          // Set user in localStorage and redirect to verification
-          setCurrentUser({
-            name,
-            email,
-            role: "hr",
-            company,
-            hr_code: data.hr_code,
-            is_verified: false,
-            is_onboarded: true
-          });
-          window.location.href = `/verify-email?email=${encodeURIComponent(email)}&otp_preview=${encodeURIComponent(data.otp_preview || '')}`;
+
+        if (res.ok) {
+          sessionStorage.setItem('pending_verify_email', email);
+          sessionStorage.setItem('pending_otp_preview', data.otp_preview || '');
+          window.location.href = `/verify-email?email=${encodeURIComponent(email)}&hr_code=${encodeURIComponent(data.hr_code)}`;
         } else {
-          alertBox.style.display = "block";
-          alertBox.style.background = "rgba(239, 68, 68, 0.1)";
-          alertBox.style.color = "#DC2626";
-          alertBox.innerText = data.detail || "Registration failed.";
-          btn.disabled = false;
-          btn.innerText = "CREATE HR ACCOUNT & GENERATE CODE";
+          alertBox.style.display = 'block';
+          alertBox.style.background = '#FEE2E2';
+          alertBox.style.color = '#991B1B';
+          alertBox.style.border = '1px solid #F87171';
+          alertBox.innerText = data.detail || 'Registration failed.';
         }
-      } catch (err) {
-        alertBox.style.display = "block";
-        alertBox.style.background = "rgba(239, 68, 68, 0.1)";
-        alertBox.style.color = "#DC2626";
-        alertBox.innerText = "Network error.";
-        btn.disabled = false;
-        btn.innerText = "CREATE HR ACCOUNT & GENERATE CODE";
+      } catch(err) {
+        alertBox.style.display = 'block';
+        alertBox.style.background = '#FEE2E2';
+        alertBox.style.color = '#991B1B';
+        alertBox.innerText = 'Network error. Please try again.';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'CREATE HR SUITE & GET HR CODE ➔';
       }
     }
   </script>
