@@ -1,8 +1,9 @@
 """
-PULSE Enterprise AI People Analytics — Local Server Runner
-Starts the FastAPI backend and serves the standalone Fireart Studio web app on http://localhost:8000.
+PULSE Enterprise AI People Analytics — Production Server Runner
+Supports local development and cloud hosting (Render, Railway, Fly.io, AWS, Docker).
 """
 
+import os
 import uvicorn
 from pathlib import Path
 import sys
@@ -12,8 +13,10 @@ if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
 
 if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8000))
+    host = os.environ.get("HOST", "0.0.0.0")
     print("=" * 65)
     print("🔥 PULSE // Enterprise AI People Analytics Platform")
-    print("   Starting native web application on http://localhost:8000")
+    print(f"   Server listening on http://{host}:{port}")
     print("=" * 65)
-    uvicorn.run("app.api.main:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("app.api.main:app", host=host, port=port, reload=False)
