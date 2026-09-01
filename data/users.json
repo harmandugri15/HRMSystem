@@ -22,5 +22,31 @@
     "salt": "ed5eaa64f8bcd044a0aeabea67146d27",
     "role": "HR Manager",
     "company": "Acme Test Corp"
+  },
+  "test.hr.lead@enterprise.ai": {
+    "name": "Elena Rostova",
+    "email": "test.hr.lead@enterprise.ai",
+    "password_hash": "d00d47e831b85ce9b8d99100fa6171545724983b6e10aac0b217afd9b6c178cd",
+    "salt": "0ad6381cf5d80d2310c02f59c8f4f6cd",
+    "role": "hr",
+    "company": "Apex Corp",
+    "hr_code": "HR-3372-APEX"
+  },
+  "test.emp.dev@enterprise.ai": {
+    "name": "Marcus Vance",
+    "email": "test.emp.dev@enterprise.ai",
+    "password_hash": "59a539c2b28b39c061b6f271416c2417699e0ae12e2c221189a4530856ad336e",
+    "salt": "a9bf997f197b1430eb0a2379b972a021",
+    "role": "employee",
+    "company": "Apex Corp",
+    "hr_code": "HR-3372-APEX",
+    "assigned_hr": "test.hr.lead@enterprise.ai",
+    "department": "IT",
+    "job_role": "Software Developer",
+    "target_role": "Lead Architect",
+    "kpi_score": 81.1,
+    "attendance": 92.9,
+    "task_completion": 90.4,
+    "peer_rating": 4.4
   }
 }

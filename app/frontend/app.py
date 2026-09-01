@@ -1,4 +1,4 @@
-﻿"""
+"""
 PULSE // Enterprise AI People Analytics & Career Progression Platform
 Commercial Landing Page, Dual-Role Authentication (HR vs. Employee),
 and Role-Dedicated Portals (HR Executive Command vs. Employee Growth Hub).

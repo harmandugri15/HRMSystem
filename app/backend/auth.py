@@ -1,4 +1,4 @@
-﻿"""
+"""
 Dual-Role Authentication and User Management Module
 Supports HR Managers (with unique generated HR Codes) and Employees (linked via HR Code),
 persistent JSON storage, secure password hashing, and profile management.

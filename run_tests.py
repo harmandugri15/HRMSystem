@@ -1,4 +1,4 @@
-﻿"""
+"""
 Automated Test Suite for Enterprise HRMS Platform
 Verifies Data Pipeline, ML Models, O*NET Recommender, Dual-Role Auth (HR & Employee), and AI Course Matcher.
 """
