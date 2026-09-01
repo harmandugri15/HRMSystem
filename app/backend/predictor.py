@@ -1,7 +1,7 @@
 """
 Inference & Prediction Services for HRMS
 Loads serialized model pipelines and provides real-time predictions, risk factors,
-and actionable HR recommendations.
+and actionable HR recommendations with automatic on-the-fly retraining fallback.
 """
 
 import pandas as pd
@@ -21,22 +21,40 @@ class HRPredictor:
         self._load_models()
 
     def _load_models(self):
-        """Load serialized ML artifacts."""
+        """Load serialized ML artifacts with automatic self-healing retraining."""
         self.attrition_artifact = None
         self.performance_artifact = None
         self.training_artifact = None
 
-        if ATTRITION_MODEL_PATH.exists():
-            self.attrition_artifact = joblib.load(ATTRITION_MODEL_PATH)
-        if PERFORMANCE_MODEL_PATH.exists():
-            self.performance_artifact = joblib.load(PERFORMANCE_MODEL_PATH)
-        if TRAINING_MODEL_PATH.exists():
-            self.training_artifact = joblib.load(TRAINING_MODEL_PATH)
+        needs_retrain = False
+        if not (ATTRITION_MODEL_PATH.exists() and PERFORMANCE_MODEL_PATH.exists() and TRAINING_MODEL_PATH.exists()):
+            needs_retrain = True
+        else:
+            try:
+                self.attrition_artifact = joblib.load(ATTRITION_MODEL_PATH)
+                self.performance_artifact = joblib.load(PERFORMANCE_MODEL_PATH)
+                self.training_artifact = joblib.load(TRAINING_MODEL_PATH)
+            except Exception as e:
+                print(f"[!] Warning loading model pickle: {e}. Initiating auto-retraining...")
+                needs_retrain = True
+
+        if needs_retrain:
+            try:
+                from app.backend.models_trainer import run_all_trainers
+                run_all_trainers()
+                self.attrition_artifact = joblib.load(ATTRITION_MODEL_PATH)
+                self.performance_artifact = joblib.load(PERFORMANCE_MODEL_PATH)
+                self.training_artifact = joblib.load(TRAINING_MODEL_PATH)
+                print("[+] Auto-retraining completed successfully.")
+            except Exception as e2:
+                print(f"[!] Fatal error during auto-retraining: {e2}")
 
     def predict_attrition(self, emp_data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Predicts employee attrition probability, risk category, and key risk drivers.
         """
+        if not self.attrition_artifact:
+            self._load_models()
         if not self.attrition_artifact:
             raise FileNotFoundError("Attrition model artifact not found. Please train models first.")
 
@@ -58,20 +76,12 @@ class HRPredictor:
 
         df["TotalSatisfaction"] = env + job + rel + wlb
         df["IncomePerYearExperience"] = income / (working_years + 1.0)
-        df["TenureToAgeRatio"] = tenure / (age if age > 0 else 1.0)
-        df["RoleTenureRatio"] = role_years / (tenure + 1.0)
+        df["PromotionWaitRatio"] = promo_years / (role_years + 1.0)
         df["ManagerTenureRatio"] = mgr_years / (tenure + 1.0)
-        df["PromotionStagnation"] = promo_years / (tenure + 1.0)
+        df["TenureRatio"] = tenure / (age - 17.0) if age > 18 else 0.1
 
-        # Ensure correct column types
-        num_cols = self.attrition_artifact["numerical_cols"]
-        cat_cols = self.attrition_artifact["categorical_cols"]
-
-        for col in num_cols:
-            if col not in df.columns:
-                df[col] = 0.0
-            else:
-                df[col] = pd.to_numeric(df[col], errors="coerce").fillna(0.0)
+        cat_cols = self.attrition_artifact.get("categorical_cols", [])
+        num_cols = self.attrition_artifact.get("numerical_cols", [])
 
         for col in cat_cols:
             if col not in df.columns:
@@ -79,97 +89,86 @@ class HRPredictor:
             else:
                 df[col] = df[col].astype(str)
 
-        required_cols = self.attrition_artifact["training_features"]
-        X_input = df[required_cols]
+        for col in num_cols:
+            if col not in df.columns:
+                df[col] = 0.0
+            else:
+                df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0.0)
+
+        train_features = self.attrition_artifact["training_features"]
+        df = df[train_features]
 
         pipeline = self.attrition_artifact["pipeline"]
-        prob = float(pipeline.predict_proba(X_input)[:, 1][0])
-        opt_thresh = float(self.attrition_artifact.get("optimal_threshold", 0.33))
+        prob = float(pipeline.predict_proba(df)[0, 1])
 
-        # Risk Classification
-        if prob >= 0.60:
-            risk_level = "Critical"
-            risk_color = "#E53E3E"
-        elif prob >= opt_thresh:
+        # Calibrated risk tiers
+        if prob >= 0.50:
             risk_level = "High"
-            risk_color = "#DD6B20"
-        elif prob >= 0.20:
-            risk_level = "Moderate"
-            risk_color = "#D69E2E"
+            risk_color = "#DC2626"
+        elif prob >= 0.25:
+            risk_level = "Medium"
+            risk_color = "#FF470A"
         else:
             risk_level = "Low"
-            risk_color = "#38A169"
+            risk_color = "#059669"
 
-        # Identify Specific Risk Drivers
-        risk_drivers = []
-        retention_actions = []
-
-        if str(emp_data.get("OverTime", "")).strip().lower() == "yes":
-            risk_drivers.append("Frequent Overtime (High burnout indicator)")
-            retention_actions.append("Cap mandatory overtime hours and rebalance project workload.")
-
-        if income < 4500:
-            risk_drivers.append(f"Below-Average Monthly Income (${income:,.0f})")
-            retention_actions.append("Review salary tier against industry benchmarks for retention adjustment.")
-
-        if promo_years >= 4:
-            risk_drivers.append(f"Promotion Stagnation ({promo_years:.0f} years since last promotion)")
-            retention_actions.append("Initiate career progression discussions and evaluate leadership pathways.")
-
-        if job <= 2:
-            risk_drivers.append("Low Job Satisfaction score (<= 2/4)")
-            retention_actions.append("Schedule confidential 1-on-1 feedback session with department lead.")
-
-        dist = float(emp_data.get("DistanceFromHome", 5))
-        if dist > 15:
-            risk_drivers.append(f"High Commute Distance ({dist:.0f} miles)")
-            retention_actions.append("Offer hybrid / remote work flexibility.")
-
-        if not risk_drivers:
-            risk_drivers.append("Steady employee sentiment; no immediate critical risk flags.")
-            retention_actions.append("Continue periodic recognition and regular managerial check-ins.")
+        # Risk drivers diagnosis
+        drivers = self._diagnose_risk_drivers(emp_data, prob)
 
         return {
             "attrition_probability": round(prob * 100, 1),
             "risk_level": risk_level,
             "risk_color": risk_color,
-            "is_at_risk": bool(prob >= opt_thresh),
-            "risk_drivers": risk_drivers,
-            "retention_actions": retention_actions
+            "risk_drivers": drivers,
+            "optimal_threshold": self.attrition_artifact.get("optimal_threshold", 0.5)
         }
 
+    def _diagnose_risk_drivers(self, emp_data: Dict[str, Any], prob: float) -> List[str]:
+        """Isolates specific organizational burnout catalysts."""
+        drivers = []
+        if emp_data.get("OverTime") == "Yes":
+            drivers.append("Excessive Mandatory Overtime Burden")
+        if emp_data.get("MonthlyIncome", 6000) < 4000:
+            drivers.append("Below-Market Compensation Level for Role")
+        if emp_data.get("YearsSinceLastPromotion", 0) >= 3:
+            drivers.append("Compressed Career Trajectory (>3 Years Without Promotion)")
+        if emp_data.get("JobSatisfaction", 3) <= 2:
+            drivers.append("Low Job Fulfillment & Role Stagnation Sentiment")
+        if emp_data.get("WorkLifeBalance", 3) <= 2:
+            drivers.append("Poor Work-Life Balance & After-Hours Fatigue")
+        if emp_data.get("DistanceFromHome", 5) > 15:
+            drivers.append("Long Daily Commute Distance (>15 Miles)")
+        if emp_data.get("YearsWithCurrManager", 3) <= 1 and emp_data.get("YearsAtCompany", 3) > 3:
+            drivers.append("Recent Manager Transition / Disconnect")
+
+        if not drivers:
+            drivers.append("Balanced organizational stability metrics.")
+
+        return drivers[:3]
+
     def predict_promotion(self, emp_data: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Evaluates promotion readiness, productivity score, and performance tier.
-        """
+        """Evaluates employee promotion readiness and 360 productivity index."""
         if not self.performance_artifact:
-            raise FileNotFoundError("Performance model artifact not found. Please train models first.")
+            self._load_models()
+        if not self.performance_artifact:
+            raise FileNotFoundError("Performance model artifact not found.")
 
         df = pd.DataFrame([emp_data])
 
-        kpi = float(emp_data.get("KPI Score", 75))
-        task = float(emp_data.get("Task Completion (%)", 75))
-        att = float(emp_data.get("Attendance (%)", 85))
-        peer = float(emp_data.get("Peer Rating", 3.5))
-        hours = float(emp_data.get("Work Hours Logged", 40))
-        mgr = float(emp_data.get("Manager Feedback", 3.5))
+        kpi = float(df["KPI Score"].iloc[0]) if "KPI Score" in df.columns else 80.0
+        task = float(df["Task Completion (%)"].iloc[0]) if "Task Completion (%)" in df.columns else 85.0
+        att = float(df["Attendance (%)"].iloc[0]) if "Attendance (%)" in df.columns else 90.0
+        peer = float(df["Peer Rating"].iloc[0]) if "Peer Rating" in df.columns else 4.0
+        mgr = float(df["Manager Feedback"].iloc[0]) if "Manager Feedback" in df.columns else 4.0
+        hours = float(df["Work Hours Logged"].iloc[0]) if "Work Hours Logged" in df.columns else 40.0
 
-        productivity_index = (kpi * 0.35) + (task * 0.35) + (att * 0.15) + ((peer * 20.0) * 0.15)
-        work_efficiency = task / (hours + 1.0)
-        mgr_ratio = (mgr / 5.0) * 100.0
+        productivity = (kpi * 0.35) + (task * 0.25) + (att * 0.15) + (peer * 20 * 0.15) + (mgr * 20 * 0.10)
+        df["ProductivityIndex"] = productivity
+        df["WorkHourEfficiency"] = (kpi * task) / (hours + 1.0)
+        df["ManagerScoreRatio"] = mgr / (peer + 0.1)
 
-        df["ProductivityIndex"] = productivity_index
-        df["WorkHourEfficiency"] = work_efficiency
-        df["ManagerScoreRatio"] = mgr_ratio
-
-        num_cols = self.performance_artifact["numerical_cols"]
-        cat_cols = self.performance_artifact["categorical_cols"]
-
-        for col in num_cols:
-            if col not in df.columns:
-                df[col] = 0.0
-            else:
-                df[col] = pd.to_numeric(df[col], errors="coerce").fillna(0.0)
+        cat_cols = self.performance_artifact.get("categorical_cols", [])
+        num_cols = self.performance_artifact.get("numerical_cols", [])
 
         for col in cat_cols:
             if col not in df.columns:
@@ -177,62 +176,48 @@ class HRPredictor:
             else:
                 df[col] = df[col].astype(str)
 
-        required_cols = self.performance_artifact["training_features"]
-        X_input = df[required_cols]
+        for col in num_cols:
+            if col not in df.columns:
+                df[col] = 0.0
+            else:
+                df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0.0)
+
+        train_features = self.performance_artifact["training_features"]
+        df = df[train_features]
 
         pipeline = self.performance_artifact["pipeline"]
-        prob = float(pipeline.predict_proba(X_input)[:, 1][0])
-        is_eligible = bool(prob >= 0.5)
+        prob = float(pipeline.predict_proba(df)[0, 1])
 
-        if productivity_index >= 80:
-            tier = "Exceeds Expectations"
-            tier_color = "#38A169"
-        elif productivity_index >= 65:
-            tier = "Meets Expectations"
-            tier_color = "#3182CE"
-        else:
-            tier = "Needs Improvement"
-            tier_color = "#E53E3E"
+        is_ready = prob >= 0.50
+        tier = "Ready for Immediate Promotion" if is_ready else ("On Accelerated Track" if prob >= 0.35 else "Development Pathway")
 
         return {
             "promotion_probability": round(prob * 100, 1),
-            "is_eligible": is_eligible,
-            "productivity_index": round(productivity_index, 1),
-            "performance_tier": tier,
-            "tier_color": tier_color,
-            "recommendation": (
-                "Recommended for promotion and leadership consideration."
-                if is_eligible else
-                "Continue focusing on KPI goals and task completion consistency."
-            )
+            "promotion_ready": is_ready,
+            "promotion_tier": tier,
+            "productivity_index": round(productivity, 1)
         }
 
-    def predict_training_outcome(self, train_data: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Predicts training course completion/success probability.
-        """
+    def predict_training_outcome(self, training_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Predicts training completion success probability and unit costs."""
         if not self.training_artifact:
-            raise FileNotFoundError("Training model artifact not found. Please train models first.")
+            self._load_models()
+        if not self.training_artifact:
+            raise FileNotFoundError("Training model artifact not found.")
 
-        df = pd.DataFrame([train_data])
-        
-        cost = float(train_data.get("Training Cost", 500))
-        days = float(train_data.get("Training Duration(Days)", 3))
-        df["CostPerTrainingDay"] = cost / (days + 0.1)
+        df = pd.DataFrame([training_data])
 
-        eng = float(train_data.get("Engagement Score", 3))
-        sat = float(train_data.get("Satisfaction Score", 3))
-        wlb = float(train_data.get("Work-Life Balance Score", 3))
+        cost = float(df["Training Cost"].iloc[0]) if "Training Cost" in df.columns else 500.0
+        days = float(df["Training Duration(Days)"].iloc[0]) if "Training Duration(Days)" in df.columns else 3.0
+        eng = float(df["Engagement Score"].iloc[0]) if "Engagement Score" in df.columns else 4.0
+        sat = float(df["Satisfaction Score"].iloc[0]) if "Satisfaction Score" in df.columns else 4.0
+        wlb = float(df["Work-Life Balance Score"].iloc[0]) if "Work-Life Balance Score" in df.columns else 3.0
+
+        df["CostPerTrainingDay"] = cost / (days + 0.001)
         df["OverallSatisfactionIndex"] = (eng + sat + wlb) / 3.0
 
-        num_cols = self.training_artifact["numerical_cols"]
-        cat_cols = self.training_artifact["categorical_cols"]
-
-        for col in num_cols:
-            if col not in df.columns:
-                df[col] = 0.0
-            else:
-                df[col] = pd.to_numeric(df[col], errors="coerce").fillna(0.0)
+        cat_cols = self.training_artifact.get("categorical_cols", [])
+        num_cols = self.training_artifact.get("numerical_cols", [])
 
         for col in cat_cols:
             if col not in df.columns:
@@ -240,18 +225,23 @@ class HRPredictor:
             else:
                 df[col] = df[col].astype(str)
 
-        required_cols = self.training_artifact["training_features"]
-        X_input = df[required_cols]
+        for col in num_cols:
+            if col not in df.columns:
+                df[col] = 0.0
+            else:
+                df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0.0)
+
+        train_features = self.training_artifact["training_features"]
+        df = df[train_features]
 
         pipeline = self.training_artifact["pipeline"]
-        prob = float(pipeline.predict_proba(X_input)[:, 1][0])
+        prob = float(pipeline.predict_proba(df)[0, 1])
 
         return {
             "success_probability": round(prob * 100, 1),
-            "predicted_outcome": "High Pass Likelihood" if prob >= 0.5 else "Needs Learning Support",
-            "cost_per_day": round(cost / (days + 0.1), 2)
+            "is_successful": prob >= 0.50,
+            "cost_per_day": round(cost / max(days, 1), 2)
         }
 
 
-# Singleton instance
 predictor = HRPredictor()

@@ -3,7 +3,7 @@ Machine Learning Training Pipeline for HRMS
 Trains, benchmarks, and serializes production ML models:
 1. Attrition Risk Classifier (Random Forest with probability calibration & risk tiers)
 2. Promotion Eligibility Classifier (Random Forest)
-3. Training Outcome Classifier (Gradient Boosting)
+3. Training Outcome Classifier (Random Forest)
 """
 
 import pandas as pd
@@ -12,20 +12,17 @@ import joblib
 import sys
 from pathlib import Path
 
-from sklearn.model_selection import train_test_split, cross_val_score, StratifiedKFold
+from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
-from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
-from sklearn.metrics import (
-    classification_report, roc_auc_score, accuracy_score,
-    precision_score, recall_score, f1_score
-)
-from xgboost import XGBClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import roc_auc_score, accuracy_score, recall_score, precision_score, f1_score
 
 # Path configuration
 sys.path.append(str(Path(__file__).resolve().parent.parent.parent))
 from app.backend.config import *
+from app.backend.data_processor import run_full_pipeline as process_all_datasets
 
 
 def train_attrition_model() -> dict:
@@ -34,14 +31,14 @@ def train_attrition_model() -> dict:
     print("[*] Training Attrition Risk Classification Model...")
     print("=" * 60)
     
-    df = pd.read_csv(DATA_PROCESSED_DIR / "processed_attrition.csv")
+    csv_path = DATA_PROCESSED_DIR / "processed_attrition.csv"
+    if not csv_path.exists():
+        process_all_datasets()
+        
+    df = pd.read_csv(csv_path)
     
-    # Target variable
     y = df["Attrition_Numeric"]
-    
-    drop_cols = [
-        "Attrition", "Attrition_Numeric", "EmployeeNumber", "OverTime_Numeric"
-    ]
+    drop_cols = ["Attrition", "Attrition_Numeric", "EmployeeNumber", "OverTime_Numeric"]
     X = df.drop(columns=[c for c in drop_cols if c in df.columns])
     
     categorical_cols = X.select_dtypes(include=["object"]).columns.tolist()
@@ -58,7 +55,6 @@ def train_attrition_model() -> dict:
         ]
     )
     
-    # Random Forest with balanced sub-sampling
     rf_pipeline = Pipeline([
         ("preprocessor", preprocessor),
         ("classifier", RandomForestClassifier(
@@ -73,7 +69,6 @@ def train_attrition_model() -> dict:
     rf_pipeline.fit(X_train, y_train)
     probs = rf_pipeline.predict_proba(X_test)[:, 1]
     
-    # Find optimal threshold for balanced precision/recall
     thresholds = np.linspace(0.1, 0.9, 81)
     f1_scores = [f1_score(y_test, (probs >= t).astype(int)) for t in thresholds]
     optimal_threshold = float(thresholds[np.argmax(f1_scores)])
@@ -84,10 +79,6 @@ def train_attrition_model() -> dict:
     prec = float(precision_score(y_test, best_preds))
     acc = float(accuracy_score(y_test, best_preds))
     
-    print(f"  Optimal Threshold: {optimal_threshold:.2f}")
-    print(f"  ROC-AUC: {auc:.4f} | Accuracy: {acc:.4f} | Recall: {rec:.4f} | Precision: {prec:.4f}")
-    
-    # Extract feature importances
     preprocessor_fitted = rf_pipeline.named_steps["preprocessor"]
     cat_feature_names = preprocessor_fitted.named_transformers_["cat"].get_feature_names_out(categorical_cols)
     all_feature_names = numerical_cols + list(cat_feature_names)
@@ -124,13 +115,14 @@ def train_performance_model() -> dict:
     print("[*] Training Performance & Promotion Model...")
     print("=" * 60)
     
-    df = pd.read_csv(DATA_PROCESSED_DIR / "processed_performance.csv")
+    csv_path = DATA_PROCESSED_DIR / "processed_performance.csv"
+    if not csv_path.exists():
+        process_all_datasets()
+        
+    df = pd.read_csv(csv_path)
     
     y = df["Promotion_Numeric"]
-    
-    drop_cols = [
-        "Employee ID", "Name", "Promotion Eligibility", "Promotion_Numeric", "PerformanceTier"
-    ]
+    drop_cols = ["Employee ID", "Name", "Promotion Eligibility", "Promotion_Numeric", "PerformanceTier"]
     X = df.drop(columns=[c for c in drop_cols if c in df.columns])
     
     categorical_cols = X.select_dtypes(include=["object"]).columns.tolist()
@@ -163,7 +155,6 @@ def train_performance_model() -> dict:
     
     acc = float(accuracy_score(y_test, preds))
     auc = float(roc_auc_score(y_test, probs))
-    print(f"  Promotion Model Accuracy: {acc:.4f} | ROC-AUC: {auc:.4f}")
     
     artifact = {
         "pipeline": pipeline,
@@ -185,10 +176,13 @@ def train_training_outcome_model() -> dict:
     print("[*] Training Training Outcome & ROI Model...")
     print("=" * 60)
     
-    df = pd.read_csv(DATA_PROCESSED_DIR / "processed_training_engagement.csv")
+    csv_path = DATA_PROCESSED_DIR / "processed_training_engagement.csv"
+    if not csv_path.exists():
+        process_all_datasets()
+        
+    df = pd.read_csv(csv_path)
     
     y = df["TrainingSuccess"]
-    
     features = [
         "DepartmentType", "Training Program Name", "Training Type",
         "Training Duration(Days)", "Training Cost", "Age",
@@ -214,9 +208,9 @@ def train_training_outcome_model() -> dict:
     
     pipeline = Pipeline([
         ("preprocessor", preprocessor),
-        ("classifier", GradientBoostingClassifier(
-            n_estimators=100,
-            max_depth=4,
+        ("classifier", RandomForestClassifier(
+            n_estimators=150,
+            max_depth=6,
             random_state=42
         ))
     ])
@@ -227,7 +221,6 @@ def train_training_outcome_model() -> dict:
     
     acc = float(accuracy_score(y_test, preds))
     auc = float(roc_auc_score(y_test, probs))
-    print(f"  Training Outcome Accuracy: {acc:.4f} | ROC-AUC: {auc:.4f}")
     
     artifact = {
         "pipeline": pipeline,
@@ -246,11 +239,9 @@ def train_training_outcome_model() -> dict:
 def run_all_trainers():
     """Train all system models and serialize artifacts."""
     MODELS_DIR.mkdir(parents=True, exist_ok=True)
-    
     train_attrition_model()
     train_performance_model()
     train_training_outcome_model()
-    
     print("\n[+] All Machine Learning Models trained and saved in models/!")
 
 
