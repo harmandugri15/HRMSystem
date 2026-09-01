@@ -37,6 +37,7 @@
             <th>Current Role</th>
             <th>Target Role</th>
             <th>KPI Benchmark</th>
+            <th>Course Status</th>
             <th>Action</th>
           </tr>
         </thead>
@@ -48,17 +49,17 @@
 
   </main>
 
-  <!-- ASSIGN COURSES & TARGET ROLE MODAL -->
+  <!-- ENHANCED ASSIGN COURSES & LIVE SCRAPER MODAL -->
   <div class="modal-overlay" id="assign-modal">
-    <div class="modal-content" style="max-width: 680px;">
+    <div class="modal-content" style="max-width: 760px;">
       <button class="modal-close" onclick="closeAssignModal()">&times;</button>
       
       <span class="badge-tag">CAREER PATHWAY & L&D ASSIGNMENT</span>
-      <h2 style="font-size: 1.6rem; margin: 10px 0 4px 0;" id="modal-emp-name">Assign Track for Employee</h2>
+      <h2 style="font-size: 1.65rem; margin: 10px 0 4px 0;" id="modal-emp-name">Assign Track for Employee</h2>
       <p style="color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 1.2rem;" id="modal-emp-meta">Sales Representatives | New York HQ</p>
 
       <div class="form-group">
-        <label class="form-label">Select Target Promotion Position</label>
+        <label class="form-label">Target Promotion Position</label>
         <select class="form-select" id="modal-target-role-select" onchange="fetchCoursesForSelectedRole(this.value)">
           <option value="Computer and Information Systems Managers">Computer and Information Systems Managers</option>
           <option value="Software Developers">Software Developers</option>
@@ -72,14 +73,40 @@
         </select>
       </div>
 
-      <div style="margin-top: 1.2rem;">
-        <label class="form-label">Tailored Enterprise Courses (Coursera, edX, AWS, Google)</label>
-        <div id="modal-courses-preview" style="display: flex; flex-direction: column; gap: 10px; max-height: 280px; overflow-y: auto; padding: 4px;">
+      <!-- Mode Selector Tabs: Role Catalog vs Live Scraper -->
+      <div class="tab-list" style="margin-top: 1.2rem; margin-bottom: 1rem;">
+        <button class="tab-btn active" id="tab-btn-catalog" onclick="switchAssignSource('catalog')">📚 O*NET Role Catalog</button>
+        <button class="tab-btn" id="tab-btn-scraper" onclick="switchAssignSource('scraper')">🌐 Live Web Scraper (Coursera, edX, Udemy, AWS)</button>
+      </div>
+
+      <!-- Tab 1: Role Catalog -->
+      <div id="assign-sec-catalog">
+        <label class="form-label">Recommended Enterprise Courses for Selected Role</label>
+        <div id="modal-courses-preview" style="display: flex; flex-direction: column; gap: 10px; max-height: 250px; overflow-y: auto; padding: 4px;">
           <!-- Course checkboxes populated dynamically -->
         </div>
       </div>
 
-      <div style="margin-top: 1.5rem; display: flex; gap: 12px; justify-content: flex-end;">
+      <!-- Tab 2: Live Web Scraper -->
+      <div id="assign-sec-scraper" style="display: none;">
+        <label class="form-label">Scrape Any Topic / Skill across Web Platforms</label>
+        <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+          <input type="text" class="form-input" id="scraper-query-input" placeholder="e.g. Cloud Architecture, Generative AI, Negotiation..." value="Cloud Architecture" style="flex: 2;">
+          <select class="form-select" id="scraper-platform-select" style="flex: 1;">
+            <option value="">All Platforms</option>
+            <option value="Coursera">Coursera</option>
+            <option value="edX">edX</option>
+            <option value="Udemy">Udemy</option>
+            <option value="AWS">AWS</option>
+          </select>
+          <button class="btn btn-primary btn-sm" onclick="triggerWebScrape()" id="scraper-run-btn">🔍 SCRAPE</button>
+        </div>
+        <div id="scraper-results-preview" style="display: flex; flex-direction: column; gap: 10px; max-height: 230px; overflow-y: auto; padding: 4px;">
+          <div style="color: var(--text-muted); font-size: 0.85rem; padding: 8px;">Enter a topic and click Scrape to discover live courses from the web.</div>
+        </div>
+      </div>
+
+      <div style="margin-top: 1.5rem; border-top: 1px solid var(--border-color); padding-top: 1rem; display: flex; gap: 12px; justify-content: flex-end;">
         <button class="btn btn-secondary" onclick="closeAssignModal()">CANCEL</button>
         <button class="btn btn-primary" onclick="submitCourseAssignment()" id="save-assignment-btn">CONFIRM & ASSIGN COURSES</button>
       </div>
@@ -92,7 +119,9 @@
     renderNavbar('roster');
 
     let currentSelectedEmail = "";
-    let currentFetchedCourses = [];
+    let currentCatalogCourses = [];
+    let currentScrapedCourses = [];
+    let currentSourceMode = "catalog";
 
     async function loadRoster() {
       if (!user) return;
@@ -108,6 +137,11 @@
 
           if (data.employees && data.employees.length > 0) {
             data.employees.forEach(e => {
+              const hasCourses = (e.assigned_courses && e.assigned_courses.length > 0);
+              const statusPill = hasCourses 
+                ? `<span class="pill pill-green">${e.assigned_courses.length} Courses Active</span>`
+                : `<span class="pill pill-orange">Awaiting Assignment</span>`;
+
               tbody.innerHTML += `
                 <tr>
                   <td><strong>${e.name}</strong></td>
@@ -117,6 +151,7 @@
                   <td>${e.job_role || 'Sales Representatives'}</td>
                   <td><span class="pill pill-orange">${e.target_role || 'Sales Managers'}</span></td>
                   <td><strong>${e.kpi_score || '88.5'}</strong>/100</td>
+                  <td>${statusPill}</td>
                   <td>
                     <button class="btn btn-primary btn-sm" onclick="openAssignModal('${e.email}', '${e.name}', '${e.job_role || 'Sales Representatives'}', '${e.target_role || 'Computer and Information Systems Managers'}', '${e.branch || 'New York HQ'}')">Assign Courses</button>
                   </td>
@@ -124,11 +159,31 @@
               `;
             });
           } else {
-            tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:#71717A; padding:2rem;">No employees registered under this code yet. Share ${hrCode} with your team members!</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; color:#71717A; padding:2rem;">No employees registered under this code yet. Share ${hrCode} with your team members!</td></tr>`;
           }
         }
       } catch(e) {
         console.error(e);
+      }
+    }
+
+    function switchAssignSource(mode) {
+      currentSourceMode = mode;
+      const tabCat = document.getElementById('tab-btn-catalog');
+      const tabScrap = document.getElementById('tab-btn-scraper');
+      const secCat = document.getElementById('assign-sec-catalog');
+      const secScrap = document.getElementById('assign-sec-scraper');
+
+      if (mode === 'catalog') {
+        tabCat.classList.add('active');
+        tabScrap.classList.remove('active');
+        secCat.style.display = 'block';
+        secScrap.style.display = 'none';
+      } else {
+        tabScrap.classList.add('active');
+        tabCat.classList.remove('active');
+        secScrap.style.display = 'block';
+        secCat.style.display = 'none';
       }
     }
 
@@ -152,6 +207,7 @@
       }
 
       fetchCoursesForSelectedRole(select.value);
+      switchAssignSource('catalog');
       document.getElementById('assign-modal').classList.add('active');
     }
 
@@ -167,13 +223,13 @@
         const res = await fetch(`/api/courses/for-role?target_role=${encodeURIComponent(targetRole)}`);
         if (res.ok) {
           const data = await res.json();
-          currentFetchedCourses = data.courses || [];
+          currentCatalogCourses = data.courses || [];
           container.innerHTML = '';
 
-          currentFetchedCourses.forEach((c, idx) => {
+          currentCatalogCourses.forEach((c, idx) => {
             container.innerHTML += `
               <label style="display:flex; align-items:flex-start; gap:10px; background:#F8FAFC; border:1px solid var(--border-color); border-radius:8px; padding:10px; cursor:pointer;">
-                <input type="checkbox" checked id="course-cb-${idx}" style="accent-color:var(--accent-flame); margin-top:3px;">
+                <input type="checkbox" checked id="cat-cb-${idx}" style="accent-color:var(--accent-flame); margin-top:3px;">
                 <div style="flex:1;">
                   <div style="font-weight:700; font-size:0.92rem; color:var(--text-primary);">${c.title}</div>
                   <div style="font-size:0.8rem; color:var(--text-secondary); margin-top:2px;">
@@ -185,7 +241,57 @@
           });
         }
       } catch(e) {
-        container.innerHTML = '<div style="color:#DC2626; font-size:0.85rem;">Failed to fetch course catalog.</div>';
+        container.innerHTML = '<div style="color:#DC2626; font-size:0.85rem;">Failed to fetch catalog.</div>';
+      }
+    }
+
+    async function triggerWebScrape() {
+      const query = document.getElementById('scraper-query-input').value;
+      const platform = document.getElementById('scraper-platform-select').value;
+      const container = document.getElementById('scraper-results-preview');
+      const btn = document.getElementById('scraper-run-btn');
+
+      btn.disabled = true;
+      btn.innerText = "SCRAPING...";
+      container.innerHTML = '<div style="color:var(--text-muted); font-size:0.85rem; padding:8px;">Scraping live courses from web platforms...</div>';
+
+      try {
+        const res = await fetch('/api/hr/scrape-courses', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query, platform, limit: 6 })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          currentScrapedCourses = data.courses || [];
+          container.innerHTML = '';
+
+          if (currentScrapedCourses.length === 0) {
+            container.innerHTML = '<div style="color:var(--text-secondary); font-size:0.85rem; padding:8px;">No courses found for this query.</div>';
+          } else {
+            currentScrapedCourses.forEach((c, idx) => {
+              container.innerHTML += `
+                <label style="display:flex; align-items:flex-start; gap:10px; background:#F8FAFC; border:1px solid var(--border-color); border-radius:8px; padding:10px; cursor:pointer;">
+                  <input type="checkbox" checked id="scrap-cb-${idx}" style="accent-color:var(--accent-flame); margin-top:3px;">
+                  <div style="flex:1;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                      <span style="font-weight:700; font-size:0.92rem; color:var(--text-primary);">${c.title}</span>
+                      <span class="pill pill-orange" style="font-size:0.7rem;">${c.source || 'Scraped'}</span>
+                    </div>
+                    <div style="font-size:0.8rem; color:var(--text-secondary); margin-top:2px;">
+                      ${c.provider} | ⏱️ ${c.duration_hours}h | ⭐ ${c.rating} | <span style="color:var(--accent-flame); font-weight:700;">${c.cost}</span>
+                    </div>
+                  </div>
+                </label>
+              `;
+            });
+          }
+        }
+      } catch (err) {
+        container.innerHTML = '<div style="color:#DC2626; font-size:0.85rem;">Error scraping web platforms.</div>';
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "🔍 SCRAPE";
       }
     }
 
@@ -193,16 +299,26 @@
       const targetRole = document.getElementById('modal-target-role-select').value;
       const selectedCourses = [];
 
-      currentFetchedCourses.forEach((c, idx) => {
-        const cb = document.getElementById(`course-cb-${idx}`);
-        if (cb && cb.checked) {
-          selectedCourses.push(c);
-        }
-      });
+      if (currentSourceMode === 'catalog') {
+        currentCatalogCourses.forEach((c, idx) => {
+          const cb = document.getElementById(`cat-cb-${idx}`);
+          if (cb && cb.checked) selectedCourses.push(c);
+        });
+      } else {
+        currentScrapedCourses.forEach((c, idx) => {
+          const cb = document.getElementById(`scrap-cb-${idx}`);
+          if (cb && cb.checked) selectedCourses.push(c);
+        });
+      }
+
+      if (selectedCourses.length === 0) {
+        alert('Please select at least 1 course to assign.');
+        return;
+      }
 
       const btn = document.getElementById('save-assignment-btn');
       btn.disabled = true;
-      btn.innerText = "SAVING ASSIGNMENT...";
+      btn.innerText = "ASSIGNING COURSES...";
 
       try {
         const res = await fetch('/api/hr/assign-courses', {

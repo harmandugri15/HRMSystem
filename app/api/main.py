@@ -1,6 +1,6 @@
 """
 PULSE // Enterprise AI People Analytics Platform — Multi-Page FastAPI Server
-Serves all dedicated HTML pages, REST API endpoints, OTP verification, and first-time onboarding.
+Serves all dedicated HTML pages, REST API endpoints, OTP verification, live course scraper, and onboarding.
 """
 
 from fastapi import FastAPI, HTTPException, Request
@@ -20,6 +20,7 @@ from app.backend.data_loader import get_executive_kpis, get_attrition_df, get_pe
 from app.backend.predictor import predictor
 from app.backend.recommender import recommender
 from app.backend.course_matcher import course_matcher
+from app.backend.course_scraper import scrape_live_courses
 from app.backend.auth import (
     authenticate_user,
     register_hr_user,
@@ -37,7 +38,7 @@ from app.backend.auth import (
 app = FastAPI(
     title="PULSE Enterprise AI People Platform",
     description="Multi-Page Enterprise People Intelligence, Retention Prediction & Skill Navigation API.",
-    version="2.2.0"
+    version="2.3.0"
 )
 
 app.add_middleware(
@@ -100,6 +101,12 @@ class AssignCoursesRequest(BaseModel):
     employee_email: str
     target_role: str
     courses: Optional[List[Dict[str, Any]]] = None
+
+
+class ScrapeCoursesRequest(BaseModel):
+    query: str
+    platform: Optional[str] = None
+    limit: int = 6
 
 
 class CompareRolesRequest(BaseModel):
@@ -199,7 +206,7 @@ def page_hr_roster():
 
 @app.api_route("/api/health", methods=["GET", "HEAD"])
 def health_check():
-    return {"status": "online", "version": "2.2.0", "mode": "Multi-Page Production"}
+    return {"status": "online", "version": "2.3.0", "mode": "Multi-Page Production"}
 
 
 @app.get("/api/kpis")
@@ -258,11 +265,7 @@ def api_login(req: LoginRequest):
 
 @app.post("/api/employee/onboard")
 def api_employee_onboard(req: EmployeeOnboardRequest):
-    dummy_skills = [{"skill": s, "importance": 4.5} for s in req.skills]
-    dummy_tools = [{"tool": s, "is_hot_tech": True} for s in req.skills if any(t in s.lower() for t in ["aws", "sql", "salesforce", "python", "crm"])]
-    
-    plan = course_matcher.generate_30_60_90_plan(req.job_role, req.target_role, dummy_skills, dummy_tools)
-    
+    # Starts with empty assigned courses until HR assigns
     ok, msg = complete_employee_onboarding(
         email=req.email,
         branch=req.branch,
@@ -271,8 +274,8 @@ def api_employee_onboard(req: EmployeeOnboardRequest):
         target_role=req.target_role,
         experience_years=req.experience_years,
         skills=req.skills,
-        assigned_courses=plan["recommended_courses"],
-        roadmap=plan
+        assigned_courses=[],
+        roadmap={}
     )
     if not ok:
         raise HTTPException(status_code=400, detail=msg)
@@ -280,7 +283,7 @@ def api_employee_onboard(req: EmployeeOnboardRequest):
     users = get_all_users()
     user = users.get(req.email.strip().lower(), {})
     user_clean = {k: v for k, v in user.items() if k not in ("password_hash", "salt")}
-    return {"success": True, "message": msg, "user": user_clean, "plan": plan}
+    return {"success": True, "message": msg, "user": user_clean}
 
 
 @app.get("/api/employee/profile/{email}")
@@ -306,6 +309,13 @@ def api_get_courses_for_role(target_role: str):
     return {"target_role": target_role, "courses": courses}
 
 
+@app.post("/api/hr/scrape-courses")
+def api_scrape_courses(req: ScrapeCoursesRequest):
+    """Live web scraper endpoint for HR to discover courses from Coursera, edX, Udemy, AWS."""
+    courses = scrape_live_courses(req.query, req.platform, req.limit)
+    return {"query": req.query, "platform": req.platform, "courses": courses}
+
+
 @app.post("/api/hr/assign-courses")
 def api_assign_courses(req: AssignCoursesRequest):
     users = get_all_users()
@@ -324,6 +334,7 @@ def api_assign_courses(req: AssignCoursesRequest):
     else:
         courses = req.courses
         roadmap = course_matcher.generate_30_60_90_plan(curr_role, req.target_role, [], [])
+        roadmap["recommended_courses"] = courses
     
     users[email_clean]["target_role"] = req.target_role
     users[email_clean]["assigned_courses"] = courses
@@ -332,7 +343,7 @@ def api_assign_courses(req: AssignCoursesRequest):
     
     return {
         "success": True,
-        "message": f"Successfully updated promotion path to '{req.target_role}' and assigned {len(courses)} tailored courses!",
+        "message": f"Successfully updated promotion path to '{req.target_role}' and assigned {len(courses)} courses!",
         "target_role": req.target_role,
         "assigned_courses": courses
     }

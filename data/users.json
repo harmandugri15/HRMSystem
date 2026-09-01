@@ -119,16 +119,11 @@
       "AWS Cloud Architecture",
       "Strategic Negotiation"
     ],
-    "kpi_score": 87.5,
-    "attendance": 96.0,
-    "task_completion": 88.7,
-    "peer_rating": 4.5,
-    "assigned_courses": [
-      {
-        "title": "AWS Certified Solutions Architect",
-        "url": "https://aws.amazon.com"
-      }
-    ],
+    "kpi_score": 93.3,
+    "attendance": 98.9,
+    "task_completion": 91.3,
+    "peer_rating": 4.4,
+    "assigned_courses": [],
     "roadmap": {}
   },
   "harmandugri15@gmail.com": {
