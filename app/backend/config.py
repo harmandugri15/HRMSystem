@@ -1,4 +1,4 @@
-﻿from pathlib import Path
+from pathlib import Path
 
 # Base Paths
 BASE_DIR = Path(__file__).resolve().parent.parent.parent

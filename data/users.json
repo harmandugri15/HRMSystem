@@ -1,0 +1,26 @@
+{
+  "admin@pulse.ai": {
+    "name": "Sarah Jenkins (CHRO)",
+    "email": "admin@pulse.ai",
+    "password_hash": "aa0c1a7298d222c65781484e0379a958689ee1b513faa6fb5f7f5bcfcfbe4dff",
+    "salt": "98e93c07faf33433c49103192e541dc5",
+    "role": "Enterprise Admin",
+    "company": "Acme Global Corp"
+  },
+  "demo@pulse.ai": {
+    "name": "Alex Mercer",
+    "email": "demo@pulse.ai",
+    "password_hash": "15b0b598cb6786ac29a493e10dfaa2c3659eed8b31c0118b845a7c5677c0ca8c",
+    "salt": "ac5274ac4a0404ef1221263fa2bc6efe",
+    "role": "People Ops Director",
+    "company": "Horizon Media"
+  },
+  "test.user@enterprise.ai": {
+    "name": "Test Officer",
+    "email": "test.user@enterprise.ai",
+    "password_hash": "17d1674a019ca65c24468bb7ad0e9825eca3fb4acd82b53935fe48821c0883a7",
+    "salt": "ed5eaa64f8bcd044a0aeabea67146d27",
+    "role": "HR Manager",
+    "company": "Acme Test Corp"
+  }
+}
