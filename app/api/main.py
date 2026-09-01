@@ -1,4 +1,4 @@
-﻿"""
+"""
 PULSE // Enterprise AI People Analytics Platform — FastAPI REST API Server
 Serves real-time ML diagnostics, O*NET taxonomies, dual-role auth, and course roadmaps.
 """

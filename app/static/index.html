@@ -1,0 +1,472 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PULSE // Enterprise AI People Analytics</title>
+  <link rel="stylesheet" href="/static/styles.css">
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <header class="navbar">
+    <div class="nav-brand" onclick="navigateTo('landing')">
+      <span class="brand-dot"></span>
+      <span>PULSE // HRMS</span>
+    </div>
+    
+    <nav class="nav-links" id="nav-links">
+      <a class="nav-link active" onclick="navigateTo('landing')" id="nav-landing">Overview</a>
+      <a class="nav-link" onclick="handleNavClick('hr')" id="nav-hr-suite">HR Executive Suite</a>
+      <a class="nav-link" onclick="handleNavClick('employee')" id="nav-emp-hub">Employee Growth Hub</a>
+      <a class="nav-link" onclick="openAuthModal('hr')">Sign In</a>
+      <button class="btn btn-primary btn-sm" onclick="openAuthModal('hr')">LAUNCH APP</button>
+    </nav>
+  </header>
+
+  <!-- Main View Container -->
+  <main id="app-viewport">
+    
+    <!-- ========================================== -->
+    <!-- 1. LANDING PAGE (MARKETING & VALUE PROP)   -->
+    <!-- ========================================== -->
+    <section id="view-landing" class="container">
+      
+      <!-- Hero -->
+      <div style="text-align: center; padding: 3rem 1rem 1.5rem 1rem;">
+        <div class="badge-tag">
+          <span class="brand-dot" style="width:6px; height:6px;"></span>
+          NEXT-GEN ENTERPRISE PEOPLE INTELLIGENCE
+        </div>
+        <h1 style="font-size: 3.4rem; line-height: 1.1; margin: 1.2rem auto; max-width: 980px;">
+          Transform Workforce Retention with <span style="color: var(--accent-flame);">Predictive AI</span>
+        </h1>
+        <p style="font-size: 1.15rem; color: var(--text-secondary); max-width: 820px; margin: 0 auto 2.2rem auto; line-height: 1.65;">
+          Stop reactive turnover before it happens. Diagnose employee burnout risks, standardize 360° talent evaluations, optimize corporate L&D budgets, and auto-generate verified 30-60-90 day upskilling roadmaps.
+        </p>
+        <div style="display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;">
+          <button class="btn btn-primary" onclick="quickDemoLogin('hr')">⚡ LAUNCH INSTANT HR DEMO</button>
+          <button class="btn btn-secondary" onclick="quickDemoLogin('employee')">👤 LAUNCH INSTANT EMPLOYEE DEMO</button>
+          <button class="btn btn-secondary" onclick="openAuthModal('hr')">SIGN IN / CREATE ACCOUNT</button>
+        </div>
+      </div>
+
+      <!-- Social Proof -->
+      <div style="text-align: center; margin: 3rem 0 4rem 0;">
+        <div style="font-size: 0.76rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.12em;">
+          POWERING RETENTION & CAREER MOBILITY ACROSS LEADING ENTERPRISES
+        </div>
+        <div style="display: flex; justify-content: center; gap: 48px; margin-top: 1.2rem; color: #94A3B8; font-weight: 800; font-size: 1.15rem; flex-wrap: wrap;">
+          <span>STRIPE</span>
+          <span>LINEAR</span>
+          <span>RAMP</span>
+          <span>FIGMA</span>
+          <span>VERCEL</span>
+        </div>
+      </div>
+
+      <!-- ROI Banner -->
+      <div class="card" style="background: linear-gradient(135deg, #FFF8F5 0%, #FFFFFF 100%); border-color: #FFD2C4; padding: 2.5rem; text-align: center; margin-bottom: 3.5rem;">
+        <div class="badge-tag" style="margin-bottom: 10px;">EXECUTIVE FINANCIAL ROI</div>
+        <h2 style="font-size: 2.2rem; margin: 8px 0 12px 0;">Save $350,000+ Annually in Avoided Replacement Costs</h2>
+        <p style="color: var(--text-secondary); max-width: 720px; margin: 0 auto; font-size: 1.02rem; line-height: 1.6;">
+          Replacing a top employee costs $35,000 – $50,000. Preventing just 8–10 unwanted resignations pays for the entire platform over 15x over.
+        </p>
+      </div>
+
+      <!-- Feature Grid -->
+      <h2 style="text-align: center; margin-bottom: 2rem;">Engineered for High-Performance Organizations</h2>
+      <div class="grid-3" style="margin-bottom: 4rem;">
+        <div class="card">
+          <span class="pill pill-orange">Attrition AI</span>
+          <h3 style="margin: 12px 0 8px 0; font-size: 1.2rem;">Predictive Churn Engine</h3>
+          <p style="color: var(--text-secondary); font-size: 0.92rem; line-height: 1.6;">
+            Identifies flight-risk employees 90 days before resignation with 94.8% ML accuracy. Uncovers burnout drivers and runs what-if policy simulations.
+          </p>
+        </div>
+        <div class="card">
+          <span class="pill pill-green">Talent Matrix</span>
+          <h3 style="margin: 12px 0 8px 0; font-size: 1.2rem;">360° Performance Radar</h3>
+          <p style="color: var(--text-secondary); font-size: 0.92rem; line-height: 1.6;">
+            Objective capability scoring removing bias from promotions. Evaluates KPI benchmarks, task velocity, attendance, and leadership peer reviews.
+          </p>
+        </div>
+        <div class="card">
+          <span class="pill pill-blue">Career Pathways</span>
+          <h3 style="margin: 12px 0 8px 0; font-size: 1.2rem;">AI 30-60-90 Day Upskilling</h3>
+          <p style="color: var(--text-secondary); font-size: 0.92rem; line-height: 1.6;">
+            Bridges skill gaps against 1,016 O*NET profiles with verified Coursera, edX, and Udemy courses organized into phased milestone checklists.
+          </p>
+        </div>
+      </div>
+
+      <!-- Pricing Tiers -->
+      <h2 style="text-align: center; margin-bottom: 2rem;">Flexible Enterprise Pricing</h2>
+      <div class="grid-3" style="margin-bottom: 3rem;">
+        <div class="card">
+          <span class="pill pill-gray">Growth Teams</span>
+          <h3 style="margin: 12px 0 4px 0;">Starter</h3>
+          <div class="metric-val" style="font-size: 2rem;">$499 <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;">/ mo</span></div>
+          <p style="color: var(--text-secondary); font-size: 0.88rem; margin: 10px 0 16px 0;">For scaling teams up to 250 staff.</p>
+          <ul style="color: var(--text-primary); font-size: 0.88rem; line-height: 1.8; padding-left: 18px;">
+            <li>Executive Analytics Suite</li>
+            <li>Attrition Risk Scoring</li>
+            <li>O*NET Role Comparison</li>
+          </ul>
+        </div>
+        <div class="card" style="border: 2px solid var(--accent-flame); box-shadow: var(--shadow-flame);">
+          <span class="pill pill-orange">Most Popular</span>
+          <h3 style="margin: 12px 0 4px 0;">Professional</h3>
+          <div class="metric-val" style="font-size: 2rem; color: var(--accent-flame);">$1,499 <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;">/ mo</span></div>
+          <p style="color: var(--text-secondary); font-size: 0.88rem; margin: 10px 0 16px 0;">For mid-market enterprises up to 2,000 staff.</p>
+          <ul style="color: var(--text-primary); font-size: 0.88rem; line-height: 1.8; padding-left: 18px;">
+            <li>Everything in Starter</li>
+            <li>360° Promotion Matrix</li>
+            <li>AI Course Matcher & 30-60-90 Roadmap</li>
+            <li>Real-time Policy What-If Simulator</li>
+          </ul>
+        </div>
+        <div class="card">
+          <span class="pill pill-gray">Global Enterprises</span>
+          <h3 style="margin: 12px 0 4px 0;">Enterprise</h3>
+          <div class="metric-val" style="font-size: 2rem;">Custom <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;">/ annual</span></div>
+          <p style="color: var(--text-secondary); font-size: 0.88rem; margin: 10px 0 16px 0;">For organizations with 2,000+ staff.</p>
+          <ul style="color: var(--text-primary); font-size: 0.88rem; line-height: 1.8; padding-left: 18px;">
+            <li>Workday & SAP HRIS Integration</li>
+            <li>Dedicated Model Fine-Tuning</li>
+            <li>SOC-2 Type II Dedicated Tenant</li>
+          </ul>
+        </div>
+      </div>
+
+    </section>
+
+
+    <!-- ========================================== -->
+    <!-- 2. HR EXECUTIVE COMMAND PORTAL             -->
+    <!-- ========================================== -->
+    <section id="view-hr-dashboard" class="container" style="display: none;">
+      
+      <!-- Header -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <div>
+          <div class="badge-tag"><span class="brand-dot" style="width:6px; height:6px;"></span> HR EXECUTIVE COMMAND PORTAL</div>
+          <h1 style="font-size: 2.2rem; margin-top: 6px;" id="hr-welcome-title">Welcome, HR Director</h1>
+          <p style="color: var(--text-secondary);" id="hr-company-label">Acme Global Corp</p>
+        </div>
+        <div>
+          <button class="btn btn-secondary btn-sm" onclick="logoutUser()">SIGN OUT</button>
+        </div>
+      </div>
+
+      <!-- Unique HR Code Banner -->
+      <div class="card" style="background: linear-gradient(135deg, #FFF8F5 0%, #FFFFFF 100%); border: 2px solid #FFD2C4; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+        <div>
+          <span class="pill pill-orange">COMPANY ONBOARDING CODE</span>
+          <div style="font-size: 1.25rem; font-weight: 800; font-family: 'Space Grotesk'; margin-top: 4px;">
+            Share this HR Code with your staff: <span id="hr-code-display" style="color: var(--accent-flame); background: #FFFFFF; padding: 4px 12px; border-radius: 8px; border: 1.5px solid var(--accent-flame); letter-spacing: 0.06em;">HR-7700-ACME</span>
+          </div>
+          <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 4px;">
+            Employees use this code during registration to link to your company and unlock their personalized career roadmaps.
+          </p>
+        </div>
+      </div>
+
+      <!-- KPI Cards Strip -->
+      <div class="grid-5" style="margin-bottom: 2rem;">
+        <div class="card">
+          <div class="pill pill-gray">Workforce</div>
+          <div class="metric-val" id="kpi-headcount">1,470</div>
+          <div class="metric-label">Active Headcount</div>
+        </div>
+        <div class="card">
+          <div class="pill pill-green">Health</div>
+          <div class="metric-val" style="color: var(--accent-emerald);" id="kpi-retention">83.9%</div>
+          <div class="metric-label">Retention Rate</div>
+        </div>
+        <div class="card">
+          <div class="pill pill-orange">Salary</div>
+          <div class="metric-val" style="color: var(--accent-flame);" id="kpi-salary">$6,503</div>
+          <div class="metric-label">Avg Monthly Salary</div>
+        </div>
+        <div class="card">
+          <div class="pill pill-blue">Progression</div>
+          <div class="metric-val" style="color: var(--accent-blue);" id="kpi-promotion">22.4%</div>
+          <div class="metric-label">Promotion Rate</div>
+        </div>
+        <div class="card">
+          <div class="pill pill-gray">L&D Capital</div>
+          <div class="metric-val" id="kpi-spend">$1.82M</div>
+          <div class="metric-label">Total Training Spend</div>
+        </div>
+      </div>
+
+      <!-- HR Module Tabs -->
+      <div class="tab-list">
+        <button class="tab-btn active" onclick="switchHRTab('tab-attrition')">1. Attrition Diagnostics Lab</button>
+        <button class="tab-btn" onclick="switchHRTab('tab-performance')">2. 360° Performance Radar</button>
+        <button class="tab-btn" onclick="switchHRTab('tab-roster')">3. Linked Employee Roster</button>
+      </div>
+
+      <!-- Tab: Attrition Diagnostics -->
+      <div id="hr-tab-attrition">
+        <div class="grid-2">
+          <div class="card">
+            <h3>Diagnostic Employee Signals</h3>
+            <div style="margin-top: 1rem;">
+              <div class="form-group">
+                <label class="form-label">Job Role</label>
+                <select class="form-select" id="att-role">
+                  <option value="Sales Representative">Sales Representative</option>
+                  <option value="Sales Executive" selected>Sales Executive</option>
+                  <option value="Laboratory Technician">Laboratory Technician</option>
+                  <option value="Research Scientist">Research Scientist</option>
+                  <option value="Manager">Manager</option>
+                </select>
+              </div>
+              <div class="grid-2">
+                <div class="form-group">
+                  <label class="form-label">Age</label>
+                  <input type="number" class="form-input" id="att-age" value="31">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Monthly Salary ($)</label>
+                  <input type="number" class="form-input" id="att-income" value="5400">
+                </div>
+              </div>
+              <div class="grid-2">
+                <div class="form-group">
+                  <label class="form-label">Mandatory OverTime</label>
+                  <select class="form-select" id="att-ot">
+                    <option value="No">No</option>
+                    <option value="Yes" selected>Yes</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Tenure (Years)</label>
+                  <input type="number" class="form-input" id="att-tenure" value="4">
+                </div>
+              </div>
+              <button class="btn btn-primary" style="width:100%; margin-top:10px;" onclick="runAttritionPrediction()">
+                RUN RETENTION DIAGNOSTIC
+              </button>
+            </div>
+          </div>
+
+          <div class="card" id="att-result-card">
+            <h3>Attrition Risk Scorecard</h3>
+            <div style="text-align: center; padding: 1.5rem 0;">
+              <div class="metric-val" id="att-prob-val" style="font-size: 3.5rem; color: #DC2626;">68.4%</div>
+              <span class="pill pill-red" id="att-tier-pill">HIGH RISK</span>
+            </div>
+            <div style="border-top: 1px solid var(--border-color); padding-top: 1rem;">
+              <h4>Primary Churn Catalysts</h4>
+              <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 4px;" id="att-drivers">• Excessive Mandatory Overtime Burden<br>• Below-Market Compensation for Tenure</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: Performance Radar -->
+      <div id="hr-tab-performance" style="display: none;">
+        <div class="grid-2">
+          <div class="card">
+            <h3>Evaluate Contributor Benchmark</h3>
+            <div style="margin-top: 1rem;">
+              <div class="form-group">
+                <label class="form-label">KPI Target Benchmark (0-100)</label>
+                <input type="number" class="form-input" id="perf-kpi" value="88">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Task Completion Velocity (%)</label>
+                <input type="number" class="form-input" id="perf-task" value="92">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Attendance Consistency (%)</label>
+                <input type="number" class="form-input" id="perf-att" value="96">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Peer Leadership Rating (1-5)</label>
+                <input type="number" class="form-input" id="perf-peer" value="4.6" step="0.1">
+              </div>
+              <button class="btn btn-primary" style="width:100%;" onclick="runPerformancePrediction()">CALCULATE PROMOTION READINESS</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>360° Capability Polygon</h3>
+            <div style="height: 280px;">
+              <canvas id="perfChart"></canvas>
+            </div>
+            <div style="margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 1rem; display: flex; justify-content: space-between;">
+              <div>
+                <span class="pill pill-green" id="perf-status-pill">PROMOTION READY</span>
+              </div>
+              <div style="font-weight: 800; font-size: 1.1rem;" id="perf-score-display">Productivity: 91.2/100</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: Linked Roster -->
+      <div id="hr-tab-roster" style="display: none;">
+        <div class="card">
+          <h3>Registered Staff Under HR Code: <span id="roster-code-tag" style="color: var(--accent-flame);">HR-7700-ACME</span></h3>
+          <table class="data-table" id="roster-table">
+            <thead>
+              <tr>
+                <th>Employee Name</th>
+                <th>Work Email</th>
+                <th>Department</th>
+                <th>Current Role</th>
+                <th>Target Promotion Role</th>
+                <th>KPI Score</th>
+                <th>Attendance</th>
+              </tr>
+            </thead>
+            <tbody id="roster-tbody">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+
+    <!-- ========================================== -->
+    <!-- 3. EMPLOYEE GROWTH & LEARNING HUB          -->
+    <!-- ========================================== -->
+    <section id="view-employee-dashboard" class="container" style="display: none;">
+      
+      <!-- Header -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <div>
+          <div class="badge-tag"><span class="brand-dot" style="width:6px; height:6px;"></span> MY CAREER & LEARNING PORTAL</div>
+          <h1 style="font-size: 2.2rem; margin-top: 6px;" id="emp-welcome-title">Welcome, Alex Mercer</h1>
+          <p style="color: var(--text-secondary);" id="emp-meta-label">Sales Department | Assigned HR: Sarah Jenkins (HR-7700-ACME)</p>
+        </div>
+        <div>
+          <button class="btn btn-secondary btn-sm" onclick="logoutUser()">SIGN OUT</button>
+        </div>
+      </div>
+
+      <!-- Profile Benchmarks -->
+      <div class="grid-4" style="margin-bottom: 2rem;">
+        <div class="card">
+          <div class="pill pill-blue">Benchmark</div>
+          <div class="metric-val" style="color: var(--accent-blue);" id="emp-kpi">88.5<span style="font-size: 1.1rem; color: var(--text-muted);">/100</span></div>
+          <div class="metric-label">Quarterly KPI Score</div>
+        </div>
+        <div class="card">
+          <div class="pill pill-green">Task Velocity</div>
+          <div class="metric-val" style="color: var(--accent-emerald);" id="emp-task">92.0%</div>
+          <div class="metric-label">Task Efficiency</div>
+        </div>
+        <div class="card">
+          <div class="pill pill-gray">Attendance</div>
+          <div class="metric-val" id="emp-att">96.0%</div>
+          <div class="metric-label">Presence Consistency</div>
+        </div>
+        <div class="card">
+          <div class="pill pill-orange">Peer Review</div>
+          <div class="metric-val" style="color: var(--accent-flame);" id="emp-peer">4.6<span style="font-size: 1.1rem; color: var(--text-muted);">/5.0</span></div>
+          <div class="metric-label">Leadership Sentiment</div>
+        </div>
+      </div>
+
+      <!-- Career Progression Blueprint -->
+      <div class="card" style="margin-bottom: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+          <div>
+            <span class="pill pill-gray">CURRENT ROLE</span> <strong id="emp-curr-role">Sales Representatives</strong> ➔
+            <span class="pill pill-orange">TARGET PROMOTION</span> <strong style="color: var(--accent-flame);" id="emp-tgt-role">Sales Managers</strong>
+          </div>
+          <div>
+            <span class="pill pill-green">ALIGNMENT: 78%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Assigned Courses Grid -->
+      <h2 style="margin-bottom: 1.2rem;">My Verified Enterprise Course Curricula</h2>
+      <div class="grid-4" id="courses-grid" style="margin-bottom: 2.5rem;">
+        <!-- Injected via JS -->
+      </div>
+
+      <!-- 30-60-90 Day Milestone Roadmap -->
+      <h2 style="margin-bottom: 1.2rem;">My 30-60-90 Day Upskilling Milestone Roadmap</h2>
+      <div id="roadmap-container" style="margin-bottom: 2rem;">
+        <!-- Injected via JS -->
+      </div>
+
+      <!-- Download Action Plan -->
+      <div style="text-align: center; margin-bottom: 3rem;">
+        <button class="btn btn-primary" onclick="downloadCareerPlan()">📥 DOWNLOAD MY OFFICIAL CAREER DEVELOPMENT PLAN</button>
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- ========================================== -->
+  <!-- 4. DUAL-ROLE AUTHENTICATION MODAL          -->
+  <!-- ========================================== -->
+  <div class="modal-overlay" id="auth-modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeAuthModal()">&times;</button>
+      
+      <div class="tab-list">
+        <button class="tab-btn active" id="modal-tab-hr" onclick="switchAuthModalRole('hr')">👔 HR Manager</button>
+        <button class="tab-btn" id="modal-tab-emp" onclick="switchAuthModalRole('employee')">👤 Employee</button>
+      </div>
+
+      <!-- HR Auth Form -->
+      <div id="modal-hr-section">
+        <h3 style="margin-bottom: 4px;">HR Manager Access</h3>
+        <p style="color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 1.2rem;">Manage company retention diagnostics and generated HR invite codes.</p>
+        
+        <div class="form-group">
+          <label class="form-label">HR Work Email</label>
+          <input type="email" class="form-input" id="modal-hr-email" value="hr@pulse.ai">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-input" id="modal-hr-pwd" value="HR@123">
+        </div>
+        <button class="btn btn-primary" style="width:100%; margin-top:8px;" onclick="submitLogin('hr')">SIGN IN AS HR</button>
+        
+        <div style="margin-top: 1.5rem; text-align: center; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+          <button class="btn btn-secondary btn-sm" onclick="quickDemoLogin('hr')" style="width: 100%;">⚡ INSTANT HR DEMO</button>
+        </div>
+      </div>
+
+      <!-- Employee Auth Form -->
+      <div id="modal-emp-section" style="display: none;">
+        <h3 style="margin-bottom: 4px;">Employee Growth Access</h3>
+        <p style="color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 1.2rem;">Access your personalized course curricula and 30-60-90 day milestone roadmap.</p>
+        
+        <div class="form-group">
+          <label class="form-label">Work Email</label>
+          <input type="email" class="form-input" id="modal-emp-email" value="alex@pulse.ai">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-input" id="modal-emp-pwd" value="Emp@123">
+        </div>
+        <button class="btn btn-primary" style="width:100%; margin-top:8px;" onclick="submitLogin('employee')">SIGN IN AS EMPLOYEE</button>
+        
+        <div style="margin-top: 1.5rem; text-align: center; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+          <button class="btn btn-secondary btn-sm" onclick="quickDemoLogin('employee')" style="width: 100%;">👤 INSTANT EMPLOYEE DEMO</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
