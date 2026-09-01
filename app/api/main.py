@@ -128,67 +128,67 @@ def _serve_page(filename: str):
     raise HTTPException(status_code=404, detail=f"Page {filename} not found.")
 
 
-@app.get("/")
+@app.api_route("/", methods=["GET", "HEAD"])
 def page_landing():
     return _serve_page("landing.html")
 
 
-@app.get("/login")
+@app.api_route("/login", methods=["GET", "HEAD"])
 def page_login():
     return _serve_page("login.html")
 
 
-@app.get("/register-hr")
+@app.api_route("/register-hr", methods=["GET", "HEAD"])
 def page_register_hr():
     return _serve_page("register_hr.html")
 
 
-@app.get("/register-employee")
+@app.api_route("/register-employee", methods=["GET", "HEAD"])
 def page_register_employee():
     return _serve_page("register_employee.html")
 
 
-@app.get("/verify-email")
+@app.api_route("/verify-email", methods=["GET", "HEAD"])
 def page_verify_email():
     return _serve_page("verify_email.html")
 
 
-@app.get("/employee/onboarding")
+@app.api_route("/employee/onboarding", methods=["GET", "HEAD"])
 def page_employee_onboarding():
     return _serve_page("employee_onboarding.html")
 
 
-@app.get("/employee/dashboard")
+@app.api_route("/employee/dashboard", methods=["GET", "HEAD"])
 def page_employee_dashboard():
     return _serve_page("employee_dashboard.html")
 
 
-@app.get("/hr/dashboard")
+@app.api_route("/hr/dashboard", methods=["GET", "HEAD"])
 def page_hr_dashboard():
     return _serve_page("hr_dashboard.html")
 
 
-@app.get("/hr/attrition")
+@app.api_route("/hr/attrition", methods=["GET", "HEAD"])
 def page_hr_attrition():
     return _serve_page("hr_attrition.html")
 
 
-@app.get("/hr/performance")
+@app.api_route("/hr/performance", methods=["GET", "HEAD"])
 def page_hr_performance():
     return _serve_page("hr_performance.html")
 
 
-@app.get("/hr/training")
+@app.api_route("/hr/training", methods=["GET", "HEAD"])
 def page_hr_training():
     return _serve_page("hr_training.html")
 
 
-@app.get("/hr/skills")
+@app.api_route("/hr/skills", methods=["GET", "HEAD"])
 def page_hr_skills():
     return _serve_page("hr_skills.html")
 
 
-@app.get("/hr/roster")
+@app.api_route("/hr/roster", methods=["GET", "HEAD"])
 def page_hr_roster():
     return _serve_page("hr_roster.html")
 
@@ -197,7 +197,7 @@ def page_hr_roster():
 # 2. REST API ENDPOINTS
 # ==============================================================================
 
-@app.get("/api/health")
+@app.api_route("/api/health", methods=["GET", "HEAD"])
 def health_check():
     return {"status": "online", "version": "2.2.0", "mode": "Multi-Page Production"}
 
